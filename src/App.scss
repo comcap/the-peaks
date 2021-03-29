@@ -1,0 +1,17 @@
+@import './assets/variables/color';
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  margin: 0 auto;
+  min-width: 280px;
+  max-width: 600px;
+  padding: 0 20px 0 20px;
+  @media screen and (min-width: 1400px) {
+    max-width: 1200px;
+  }
+}
