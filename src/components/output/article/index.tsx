@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import LogoWhite from 'assets/Logo-white.png'
-import { url } from 'node:inspector'
 
 export type IArticle = {
   title: string
@@ -10,16 +9,22 @@ export type IArticle = {
 
 const ArticleStyle = styled.div`
   position: relative;
+  margin-bottom: 30px;
   border-bottom: 2px solid var(--crimson);
   background-color: var(--darkslateblue);
-  min-height: 260px;
-  max-height: 360px;
 
+  min-height: 160px;
+  max-height: 360px;
   display: flex;
   justify-content: center;
   align-items: center;
 
+  @media screen and (min-width: 768px) {
+    min-height: 360px;
+  }
+
   @media screen and (min-width: 1024px) {
+    margin-bottom: 0px;
     min-height: 140px;
   }
 
