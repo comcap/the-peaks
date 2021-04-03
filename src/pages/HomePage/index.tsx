@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { getList } from 'core/action/collection'
@@ -98,6 +99,7 @@ const getLifeAndStyleArticles = () => {
 const HomePages: React.FC = () => {
   const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
 
+  const history = useHistory()
   const [articles, setArticles] = useState<IResArticles[]>([])
   const [articlesSport, setSportArticles] = useState<IResArticles[]>([])
   const [articlesCultures, setCulturesArticles] = useState<IResArticles[]>([])
@@ -146,8 +148,16 @@ const HomePages: React.FC = () => {
         <section className='top'>
           {articles
             .filter((_, index) => index === 0)
-            .map((article) => (
+            .map((article, index) => (
               <Article
+                key={index}
+                onClick={() => {
+                  console.log(`article.id`, `article/${article.id}`)
+                  history.push({
+                    pathname: '/article',
+                    state: { id: article.id },
+                  })
+                }}
                 className='first'
                 title={article.webTitle}
                 thumbnail={article.fields?.thumbnail}
@@ -159,8 +169,12 @@ const HomePages: React.FC = () => {
                 (_, index) =>
                   index === 1 || index === 2 || index === 3 || index === 4,
               )
-              .map((article) => (
+              .map((article, index) => (
                 <Article
+                  key={index}
+                  onClick={() => {
+                    history.push(`article/${article.id}`)
+                  }}
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
                 />
@@ -177,25 +191,34 @@ const HomePages: React.FC = () => {
                 index !== 3 &&
                 index !== 4,
             )
-            .map((article) => {
+            .map((article, index) => {
               return (
                 <Article
+                  key={index}
+                  onClick={() => {
+                    history.push(`article/${article.id}`)
+                  }}
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
                 />
               )
             })}
         </section>
-        {category.map((cate) => (
+        {category.map((cate, index) => (
           <>
             <ContentHeader
+              key={index}
               title={renderCategory(cate).title}
               showBookMark={false}
               showFilter={false}
             />
             <section>
-              {renderCategory(cate).articles.map((article) => (
+              {renderCategory(cate).articles.map((article, articleIndex) => (
                 <Article
+                  key={articleIndex}
+                  onClick={() => {
+                    history.push(`article/${article.id}`)
+                  }}
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
                 />

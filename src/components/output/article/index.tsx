@@ -5,6 +5,7 @@ export type IArticle = {
   title: string
   thumbnail?: string
   className?: string
+  onClick?: () => void
 }
 
 const ArticleStyle = styled.div`
@@ -54,9 +55,14 @@ const ArticleStyle = styled.div`
   }
 `
 
-const Article: React.FC<IArticle> = ({ className, title, thumbnail }) => {
+const Article: React.FC<IArticle> = ({
+  onClick,
+  className,
+  title,
+  thumbnail,
+}) => {
   return (
-    <ArticleStyle className={className}>
+    <ArticleStyle onClick={onClick} className={className}>
       {thumbnail ? (
         <img className='img-thumbnail' src={thumbnail} alt='thumbnail' />
       ) : (

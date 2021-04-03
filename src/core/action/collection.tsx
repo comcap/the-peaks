@@ -12,3 +12,15 @@ export const getList = async (schemas: String, params: any) => {
     return []
   }
 }
+
+export const getByID = async (schemas: String, params: any) => {
+  try {
+    const response = await httpClient.get(`${schemas}`, { params })
+
+    if (response.status === 200 || response.status === 201) {
+      return response.data.response.content
+    }
+  } catch (err) {
+    return []
+  }
+}

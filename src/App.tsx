@@ -17,7 +17,7 @@ const App: React.FC = () => {
       <Suspense fallback={<Loader />}>
         <Switch>
           <Route exact path='/' component={Pages.HomePage} />
-          {/* <Route exact path='/article/:id' component={Pages.DashboardPage} /> */}
+          <Route exact path='/article' component={Pages.ArticlePage} />
           {/* <Route
             path='/system/term-condition'
             component={Pages.DashboardPage}
