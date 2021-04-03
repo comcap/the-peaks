@@ -63,6 +63,10 @@ const onSelectFilter = (val: string) => {
   console.log(`val`, val)
 }
 
+const onSearch = (val: string) => {
+  console.log(`val`, val)
+}
+
 const getNewsArticles = () => {
   return getList('/search', {
     section: 'news',
@@ -136,7 +140,7 @@ const HomePages: React.FC = () => {
   }
 
   return (
-    <Layout>
+    <Layout onSearch={onSearch}>
       <Content>
         <ContentHeader title='Top stories' onFilter={onSelectFilter} />
         <section className='top'>

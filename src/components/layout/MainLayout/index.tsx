@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import LogoWhite from 'assets/Logo-white.png'
 import searchWhite from 'assets/search-icon@2x.svg'
@@ -20,6 +21,26 @@ const MainLayout = styled.div`
         border-bottom: 2px solid var(--white);
         padding-bottom: 6px;
       }
+
+      .input-icon {
+        position: absolute;
+        right: 30px;
+        bottom: 26px;
+      }
+
+      input {
+        &::placeholder {
+          color: #5e82bc;
+        }
+        align-self: flex-end;
+        background-color: var(--secondary);
+        width: 80px;
+        width: 120px;
+        height: 30px;
+        border: none;
+        border-bottom: 2px solid var(--white);
+        padding: 0px 12px;
+      }
     }
   }
   main {
@@ -32,15 +53,35 @@ const MainLayout = styled.div`
   }
 `
 
-const Layout: React.FC = ({ children }) => {
+type IPropsLayout = {
+  onSearch: (val: string) => void
+}
+
+const Layout: React.FC<IPropsLayout> = ({ children, onSearch }) => {
+  const [showSearch, setShowSearch] = useState(false)
+
   return (
     <MainLayout>
       <header>
         <div className='container'>
           <img className='logo' src={LogoWhite} alt='LogoWhite' />
-          <div className='input-search'>
-            <img src={searchWhite} alt='searchWhite' />
-          </div>
+          {showSearch ? (
+            <>
+              <input
+                type='text'
+                onChange={(e) => onSearch(e.target.value)}
+                placeholder='Search all news'
+              />
+              <img className='input-icon' src={searchWhite} alt='searchWhite' />
+            </>
+          ) : (
+            <div
+              onClick={() => setShowSearch(!showSearch)}
+              className='input-search'
+            >
+              <img src={searchWhite} alt='searchWhite' />
+            </div>
+          )}
         </div>
       </header>
       <main className='content container'>{children}</main>
