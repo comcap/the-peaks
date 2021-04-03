@@ -1,11 +1,44 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import LogoWhite from 'assets/Logo-white.png'
 import { getList } from 'core/action/collection'
 import { Layout, ContentHeader } from 'components/layout'
+import { Article } from 'components/output'
 
-const Content = styled.div``
+const Content = styled.div`
+  section {
+    &.top,
+    &.sec-fifth {
+      @media screen and (min-width: 1024px) {
+        display: grid;
+        grid-template-rows: auto;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 30px;
+
+        .first {
+          height: 312px;
+        }
+      }
+    }
+
+    &.more {
+      margin-top: 30px;
+      @media screen and (min-width: 1024px) {
+        display: grid;
+        grid-template-rows: auto;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 30px;
+      }
+    }
+
+    @media screen and (min-width: 1024px) {
+      display: grid;
+      grid-template-rows: auto;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-gap: 30px;
+    }
+  }
+`
 
 export type IResArticles = {
   id: string
@@ -24,47 +57,148 @@ export type IResArticles = {
   }
 }
 
+export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
+
 const onSelectFilter = (val: string) => {
   console.log(`val`, val)
 }
 
-const getArticles = () => {
+const getNewsArticles = () => {
   return getList('/search', {
     section: 'news',
     'show-fields': 'thumbnail',
   }).then((response) => response)
 }
 
+const getSportsArticles = () => {
+  return getList('/search', {
+    section: 'sport',
+    'show-fields': 'thumbnail',
+  }).then((response) => response)
+}
+
+const getCulturesArticles = () => {
+  return getList('/search', {
+    section: 'culture',
+    'show-fields': 'thumbnail',
+  }).then((response) => response)
+}
+
+const getLifeAndStyleArticles = () => {
+  return getList('/search', {
+    section: 'lifeandstyle',
+    'show-fields': 'thumbnail',
+  }).then((response) => response)
+}
+
 const HomePages: React.FC = () => {
+  const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
+
   const [articles, setArticles] = useState<IResArticles[]>([])
+  const [articlesSport, setSportArticles] = useState<IResArticles[]>([])
+  const [articlesCultures, setCulturesArticles] = useState<IResArticles[]>([])
+  const [articlesLifeAndStyle, setLifeAndStyleArticles] = useState<
+    IResArticles[]
+  >([])
 
   useEffect(() => {
     async function fetchAPI() {
-      const res = await getArticles()
-      setArticles(res)
+      const news = await getNewsArticles()
+      const sport = await getSportsArticles()
+      const cultures = await getCulturesArticles()
+      const LAS = await getLifeAndStyleArticles()
+
+      setArticles(news)
+      setSportArticles(sport)
+      setCulturesArticles(cultures)
+      setLifeAndStyleArticles(LAS)
     }
 
     fetchAPI()
   }, [])
 
+  const renderCategory = (key: ICategory) => {
+    const obj = {
+      sports: {
+        title: 'Sports',
+        articles: articlesSport,
+      },
+      cultures: {
+        title: 'Cultures',
+        articles: articlesCultures,
+      },
+      lifeAndStyle: {
+        title: 'LifeAndStyle',
+        articles: articlesLifeAndStyle,
+      },
+    }
+    return obj[key]
+  }
+
   return (
     <Layout>
       <Content>
         <ContentHeader title='Top stories' onFilter={onSelectFilter} />
-        <section>
-          {articles.map((article) => {
-            return (
-              <div>
-                <img
-                  src={article.fields?.thumbnail || LogoWhite}
-                  alt='thumbnail'
+        <section className='top'>
+          {articles
+            .filter((_, index) => index === 0)
+            .map((article) => (
+              <Article
+                className='first'
+                title={article.webTitle}
+                thumbnail={article.fields?.thumbnail}
+              />
+            ))}
+          <section className='sec-fifth'>
+            {articles
+              .filter(
+                (_, index) =>
+                  index === 1 || index === 2 || index === 3 || index === 4,
+              )
+              .map((article) => (
+                <Article
+                  title={article.webTitle}
+                  thumbnail={article.fields?.thumbnail}
                 />
-
-                {article.webTitle}
-              </div>
-            )
-          })}
+              ))}
+          </section>
         </section>
+        <section className='more'>
+          {articles
+            .filter(
+              (_, index) =>
+                index !== 0 &&
+                index !== 1 &&
+                index !== 2 &&
+                index !== 3 &&
+                index !== 4,
+            )
+            .map((article) => {
+              return (
+                <Article
+                  title={article.webTitle}
+                  thumbnail={article.fields?.thumbnail}
+                />
+              )
+            })}
+        </section>
+        {category.map((cate) => (
+          <>
+            <ContentHeader
+              title={renderCategory(cate).title}
+              showBookMark={false}
+              showFilter={false}
+            />
+            <section>
+              {renderCategory(cate).articles.map((article) => (
+                <Article
+                  title={article.webTitle}
+                  thumbnail={article.fields?.thumbnail}
+                />
+              ))}
+            </section>
+          </>
+        ))}
       </Content>
     </Layout>
   )

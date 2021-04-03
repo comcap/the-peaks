@@ -1,0 +1,67 @@
+import styled from 'styled-components'
+import LogoWhite from 'assets/Logo-white.png'
+import { url } from 'node:inspector'
+
+export type IArticle = {
+  title: string
+  thumbnail?: string
+  className?: string
+}
+
+const ArticleStyle = styled.div`
+  position: relative;
+  border-bottom: 2px solid var(--crimson);
+  background-color: var(--darkslateblue);
+  min-height: 260px;
+  max-height: 360px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media screen and (min-width: 1024px) {
+    min-height: 140px;
+  }
+
+  @media screen and (min-width: 1440px) {
+    height: 240px;
+  }
+
+  .img-thumbnail {
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+  }
+  .img-default {
+    width: auto;
+    height: 60px;
+  }
+
+  .content {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    background-color: var(--darkslateblueOpacity);
+    color: var(--white);
+    p {
+      padding: 14px;
+    }
+  }
+`
+
+const Article: React.FC<IArticle> = ({ className, title, thumbnail }) => {
+  return (
+    <ArticleStyle className={className}>
+      {thumbnail ? (
+        <img className='img-thumbnail' src={thumbnail} alt='thumbnail' />
+      ) : (
+        <img className='img-default' src={LogoWhite} alt='thumbnail' />
+      )}
+      <div className='content'>
+        <p>{title}</p>
+      </div>
+    </ArticleStyle>
+  )
+}
+
+export default Article

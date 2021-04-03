@@ -1,1 +1,4 @@
-export const Loader = require('./loader').default
+import Loader from './loader'
+import Article from './article'
+
+export { Loader, Article }

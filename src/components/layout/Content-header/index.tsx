@@ -34,18 +34,20 @@ const LayoutHeader = styled.div`
 `
 
 export type IPropsLayoutHeader = {
-  title?: String
-  showBookMark?: Boolean
-  onFilter: (val: String) => void
+  title?: string
+  showBookMark?: boolean
+  showFilter?: boolean
+  onFilter?: (val: string) => void
 }
 
 const ContentHeader: React.FC<IPropsLayoutHeader> = ({
   title,
   showBookMark,
+  showFilter,
   onFilter,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onFilter(e.target.value)
+    onFilter && onFilter(e.target.value)
   }
 
   return (
@@ -59,11 +61,13 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
           </Button>
         )}
 
-        <select onChange={handleChange}>
-          <option value='new'>Newest first</option>
-          <option value='old'>Oldest first</option>
-          <option value='most'>Most popular</option>
-        </select>
+        {showFilter && (
+          <select onChange={handleChange}>
+            <option value='new'>Newest first</option>
+            <option value='old'>Oldest first</option>
+            <option value='most'>Most popular</option>
+          </select>
+        )}
       </div>
     </LayoutHeader>
   )
@@ -72,6 +76,7 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
 ContentHeader.defaultProps = {
   title: 'Title',
   showBookMark: true,
+  showFilter: true,
   onFilter: () => {},
 }
 
