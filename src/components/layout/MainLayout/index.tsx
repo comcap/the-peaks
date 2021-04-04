@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { useHistory } from 'react-router-dom'
+
 import LogoWhite from 'assets/Logo-white.png'
 import searchWhite from 'assets/search-icon@2x.svg'
 
@@ -13,6 +15,9 @@ const MainLayout = styled.div`
       align-items: center;
       justify-content: space-between;
 
+      .logo {
+        cursor: pointer;
+      }
       .input-search {
         cursor: pointer;
         text-align: center;
@@ -59,12 +64,17 @@ type IPropsLayout = {
 
 const Layout: React.FC<IPropsLayout> = ({ children, onSearch }) => {
   const [showSearch, setShowSearch] = useState(false)
-
+  const history = useHistory()
   return (
     <MainLayout>
       <header>
         <div className='container'>
-          <img className='logo' src={LogoWhite} alt='LogoWhite' />
+          <img
+            className='logo'
+            src={LogoWhite}
+            alt='LogoWhite'
+            onClick={() => history.push('/')}
+          />
           {showSearch ? (
             <>
               <input

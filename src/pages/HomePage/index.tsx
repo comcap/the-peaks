@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { getList } from 'core/action/collection'
@@ -16,7 +17,11 @@ const Content = styled.div`
         grid-gap: 30px;
 
         .first {
-          height: 312px;
+          height: 512px;
+        }
+
+        .sec {
+          min-height: 240px;
         }
       }
     }
@@ -54,7 +59,14 @@ export type IResArticles = {
   pillarName: string
   fields?: {
     thumbnail: string
+    body: string
+    bodyText: string
   }
+  // blocks: {
+  //   requestedBodyBlocks: {
+  //     ['body:latest:1']: IBodyBlocks[]
+  //   }
+  // }
 }
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
@@ -67,43 +79,48 @@ const onSearch = (val: string) => {
   console.log(`val`, val)
 }
 
+const showFields = 'thumbnail,body'
 const getNewsArticles = () => {
   return getList('/search', {
+    'page-size': 8,
     section: 'news',
-    'show-fields': 'thumbnail',
+    'show-fields': 'all',
   }).then((response) => response)
 }
 
 const getSportsArticles = () => {
   return getList('/search', {
     section: 'sport',
-    'show-fields': 'thumbnail',
+    'show-fields': showFields,
   }).then((response) => response)
 }
 
 const getCulturesArticles = () => {
   return getList('/search', {
     section: 'culture',
-    'show-fields': 'thumbnail',
+    'show-fields': showFields,
   }).then((response) => response)
 }
 
 const getLifeAndStyleArticles = () => {
   return getList('/search', {
     section: 'lifeandstyle',
-    'show-fields': 'thumbnail',
+    'show-fields': showFields,
   }).then((response) => response)
 }
 
 const HomePages: React.FC = () => {
   const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
 
+  const history = useHistory()
   const [articles, setArticles] = useState<IResArticles[]>([])
   const [articlesSport, setSportArticles] = useState<IResArticles[]>([])
   const [articlesCultures, setCulturesArticles] = useState<IResArticles[]>([])
   const [articlesLifeAndStyle, setLifeAndStyleArticles] = useState<
     IResArticles[]
   >([])
+
+  console.log(`articles`, articles[0])
 
   useEffect(() => {
     async function fetchAPI() {
@@ -146,21 +163,38 @@ const HomePages: React.FC = () => {
         <section className='top'>
           {articles
             .filter((_, index) => index === 0)
-            .map((article) => (
+            .map((article, index) => (
               <Article
+                key={index}
+                onClick={() => {
+                  history.push({
+                    pathname: '/article',
+                    state: { id: article.id },
+                  })
+                }}
                 className='first'
                 title={article.webTitle}
+                body={article.fields?.bodyText}
                 thumbnail={article.fields?.thumbnail}
               />
             ))}
+
           <section className='sec-fifth'>
             {articles
               .filter(
                 (_, index) =>
                   index === 1 || index === 2 || index === 3 || index === 4,
               )
-              .map((article) => (
+              .map((article, index) => (
                 <Article
+                  key={index}
+                  onClick={() => {
+                    history.push({
+                      pathname: '/article',
+                      state: { id: article.id },
+                    })
+                  }}
+                  className='sec'
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
                 />
@@ -177,25 +211,41 @@ const HomePages: React.FC = () => {
                 index !== 3 &&
                 index !== 4,
             )
-            .map((article) => {
+            .map((article, index) => {
               return (
                 <Article
+                  key={index}
+                  onClick={() => {
+                    history.push({
+                      pathname: '/article',
+                      state: { id: article.id },
+                    })
+                  }}
                   title={article.webTitle}
+                  body={article.fields?.bodyText}
                   thumbnail={article.fields?.thumbnail}
                 />
               )
             })}
         </section>
-        {category.map((cate) => (
+        {category.map((cate, index) => (
           <>
             <ContentHeader
+              key={index}
               title={renderCategory(cate).title}
               showBookMark={false}
               showFilter={false}
             />
             <section>
-              {renderCategory(cate).articles.map((article) => (
+              {renderCategory(cate).articles.map((article, articleIndex) => (
                 <Article
+                  key={articleIndex}
+                  onClick={() => {
+                    history.push({
+                      pathname: '/article',
+                      state: { id: article.id },
+                    })
+                  }}
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
                 />

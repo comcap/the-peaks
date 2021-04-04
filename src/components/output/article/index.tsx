@@ -1,20 +1,23 @@
+import htmlParser from 'react-html-parser'
 import styled from 'styled-components'
 import LogoWhite from 'assets/Logo-white.png'
 
 export type IArticle = {
   title: string
   thumbnail?: string
+  body?: string
   className?: string
+  onClick?: () => void
 }
 
 const ArticleStyle = styled.div`
   position: relative;
+  cursor: pointer;
   margin-bottom: 30px;
   border-bottom: 2px solid var(--crimson);
   background-color: var(--darkslateblue);
-
+  box-shadow: 0px 0px 10px 2px #ccc;
   min-height: 160px;
-  max-height: 360px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,11 +28,11 @@ const ArticleStyle = styled.div`
 
   @media screen and (min-width: 1024px) {
     margin-bottom: 0px;
-    min-height: 140px;
+    min-height: 300px;
   }
 
   @media screen and (min-width: 1440px) {
-    height: 240px;
+    height: 300px;
   }
 
   .img-thumbnail {
@@ -44,26 +47,48 @@ const ArticleStyle = styled.div`
 
   .content {
     width: 100%;
+    height: 36%;
     position: absolute;
     bottom: 0;
     background-color: var(--darkslateblueOpacity);
     color: var(--white);
+    padding-bottom: 14px;
+
+    .body {
+      max-height: 30px;
+      overflow: hidden;
+      padding: 0 14px;
+      p {
+        font-size: 0.8em;
+        padding: 0;
+      }
+    }
+
     p {
+      height: auto;
+      font-size: 1.2em;
       padding: 14px;
     }
   }
 `
 
-const Article: React.FC<IArticle> = ({ className, title, thumbnail }) => {
+const Article: React.FC<IArticle> = ({
+  onClick,
+  className,
+  title,
+  body,
+  thumbnail,
+}) => {
   return (
-    <ArticleStyle className={className}>
+    <ArticleStyle onClick={onClick} className={className}>
       {thumbnail ? (
         <img className='img-thumbnail' src={thumbnail} alt='thumbnail' />
       ) : (
         <img className='img-default' src={LogoWhite} alt='thumbnail' />
       )}
       <div className='content'>
-        <p>{title}</p>
+        <p className='title'>{title}</p>
+        <div className='body'>{body && htmlParser(body)[0]}</div>
       </div>
     </ArticleStyle>
   )
