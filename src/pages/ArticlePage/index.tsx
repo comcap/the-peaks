@@ -7,32 +7,67 @@ import moment from 'moment'
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
 import { getByID } from 'core/action/collection'
-import { Layout, ContentHeader } from 'components/layout'
-import { Article } from 'components/output'
+import { Layout } from 'components/layout'
 
 const Content = styled.div`
   padding-top: 60px;
 
   .date {
+    font-size: 0.6em;
   }
   .detail {
     margin-top: 20px;
     display: flex;
 
+    figcaption {
+      color: var(--darkgray);
+      font-size: 0.5em;
+    }
+
     .content-detail {
-      width: 50%;
+      width: 100%;
+
+      @media screen and (min-width: 1024px) {
+        width: 50%;
+      }
 
       .body {
         width: 100%;
         font-size: 14px;
+        img {
+          width: 100%;
+          height: auto;
+        }
+
         p {
           margin: 16px 0;
         }
       }
     }
-    .thumbnail-detail {
+    .thumbnail-inside-detail {
+      display: block;
+
+      @media screen and (min-width: 1024px) {
+        display: none;
+      }
+      img {
+        width: auto;
+        height: 260px;
+      }
+    }
+
+    .thumbnail-outside-detail {
       width: 50%;
-      height: 300px;
+      display: none;
+      margin-top: 25%;
+
+      @media screen and (min-width: 1024px) {
+        display: block;
+      }
+      img {
+        width: auto;
+        height: 260px;
+      }
     }
   }
 `
@@ -53,6 +88,7 @@ export type IResArticles = {
     thumbnail: string
     headline: string
     body: string
+    main: string
   }
 }
 
@@ -60,9 +96,9 @@ export type ILocation = {
   id: string
 }
 
-const onSelectFilter = (val: string) => {
-  console.log(`val`, val)
-}
+// const onSelectFilter = (val: string) => {
+//   console.log(`val`, val)
+// }
 
 const onSearch = (val: string) => {
   console.log(`val`, val)
@@ -70,7 +106,7 @@ const onSearch = (val: string) => {
 
 const getArticle = (id: string) => {
   return getByID(`/${id}`, {
-    'show-fields': `thumbnail,headline,body`,
+    'show-fields': `thumbnail,headline,body,main`,
     'show-elements': `image,audio`,
   }).then((response) => response)
 }
@@ -114,16 +150,15 @@ const ArticlePage: React.FC = () => {
             <h3>{articles?.fields?.headline}</h3>
             <div className='body'>
               <hr />
+              <div className='thumbnail-inside-detail'>
+                {articles?.fields?.main && HtmlParser(articles?.fields?.main)}
+              </div>
               {articles?.fields && HtmlParser(articles?.fields?.body)}
             </div>
           </div>
-          {articles?.fields?.thumbnail && (
-            <img
-              className='thumbnail-detail'
-              src={articles?.fields?.thumbnail}
-              alt='thumbnail'
-            />
-          )}
+          <div className='thumbnail-outside-detail'>
+            {articles?.fields?.main && HtmlParser(articles?.fields?.main)}
+          </div>
         </div>
       </Content>
     </Layout>

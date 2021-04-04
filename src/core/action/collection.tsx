@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios'
 import httpClient from 'core/utils/service'
 
 export const getList = async (schemas: String, params: any) => {
