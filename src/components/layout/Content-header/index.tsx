@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
+import { SnackBar } from 'components/output'
 
 const LayoutHeader = styled.div`
   display: flex;
@@ -54,12 +55,12 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
     <LayoutHeader>
       <h1>{title}</h1>
       <div className='filter'>
-        {showBookMark && (
-          <Button>
+        {/* {showBookMark && (
+          <Button onClick={() => <SnackBar />}>
             <img src={bookMark} alt='bookMark' />
             <span> VIEW BOOKMARK</span>
           </Button>
-        )}
+        )} */}
 
         {showFilter && (
           <select onChange={handleChange}>

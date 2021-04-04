@@ -8,14 +8,19 @@ const ButtonStyle = styled.button`
   background-color: var(--primary);
   padding: 8px;
   color: var(--white);
+  cursor: pointer;
 
   img {
     vertical-align: top;
   }
 `
 
-const Button: React.FC<HTMLButtonElement> = ({ children }) => {
-  return <ButtonStyle>{children}</ButtonStyle>
+export type IPropsButton = {
+  onClick: React.MouseEventHandler<HTMLButtonElement>
+}
+
+const Button: React.FC<IPropsButton> = ({ children, onClick }) => {
+  return <ButtonStyle onClick={onClick}>{children}</ButtonStyle>
 }
 
 export default Button

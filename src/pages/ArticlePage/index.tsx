@@ -6,6 +6,7 @@ import moment from 'moment'
 
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
+import { SnackBar } from 'components/output'
 import { getByID } from 'core/action/collection'
 import { Layout } from 'components/layout'
 
@@ -96,10 +97,6 @@ export type ILocation = {
   id: string
 }
 
-// const onSelectFilter = (val: string) => {
-//   console.log(`val`, val)
-// }
-
 const onSearch = (val: string) => {
   console.log(`val`, val)
 }
@@ -122,6 +119,18 @@ const formatDate = (userDate: Date) => {
 const ArticlePage: React.FC = () => {
   const location = useLocation<ILocation>()
   const [articles, setArticles] = useState<IResArticles>()
+  // const [showSnackBar, setShowSnackBar] = useState<boolean>(false)
+  // const [showSnackBar, setShowSnackBar] = useState<string>(
+  //   localStorage.getItem('bookmarks')
+  // )
+  // localStorage.setItem('bookmarks',)
+  const onClickBookmark = () => {
+    console.log(`articles`, articles?.apiUrl)
+    setShowSnackBar(true)
+    setTimeout(() => {
+      setShowSnackBar(false)
+    }, 3000)
+  }
 
   useEffect(() => {
     async function fetchAPI() {
@@ -135,7 +144,8 @@ const ArticlePage: React.FC = () => {
   return (
     <Layout onSearch={onSearch}>
       <Content>
-        <Button>
+        <SnackBar message='the article has been save' show={showSnackBar} />
+        <Button onClick={() => onClickBookmark()}>
           <img src={bookMark} alt='bookMark' />
           <span> VIEW BOOKMARK</span>
         </Button>

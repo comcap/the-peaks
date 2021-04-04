@@ -1,1 +1,2 @@
-export const Button = require('./Button').default
+import Button from './Button'
+export { Button }

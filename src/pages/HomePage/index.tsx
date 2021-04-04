@@ -120,8 +120,6 @@ const HomePages: React.FC = () => {
     IResArticles[]
   >([])
 
-  console.log(`articles`, articles[0])
-
   useEffect(() => {
     async function fetchAPI() {
       const news = await getNewsArticles()
@@ -229,9 +227,8 @@ const HomePages: React.FC = () => {
             })}
         </section>
         {category.map((cate, index) => (
-          <>
+          <div key={index}>
             <ContentHeader
-              key={index}
               title={renderCategory(cate).title}
               showBookMark={false}
               showFilter={false}
@@ -251,7 +248,7 @@ const HomePages: React.FC = () => {
                 />
               ))}
             </section>
-          </>
+          </div>
         ))}
       </Content>
     </Layout>
