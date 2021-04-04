@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
+import HtmlParser from 'react-html-parser'
+import moment from 'moment'
 
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
@@ -9,36 +11,28 @@ import { Layout, ContentHeader } from 'components/layout'
 import { Article } from 'components/output'
 
 const Content = styled.div`
-  section {
-    &.top,
-    &.sec-fifth {
-      @media screen and (min-width: 1024px) {
-        display: grid;
-        grid-template-rows: auto;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 30px;
+  padding-top: 60px;
 
-        .first {
-          height: 312px;
+  .date {
+  }
+  .detail {
+    margin-top: 20px;
+    display: flex;
+
+    .content-detail {
+      width: 50%;
+
+      .body {
+        width: 100%;
+        font-size: 14px;
+        p {
+          margin: 16px 0;
         }
       }
     }
-
-    &.more {
-      margin-top: 30px;
-      @media screen and (min-width: 1024px) {
-        display: grid;
-        grid-template-rows: auto;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 30px;
-      }
-    }
-
-    @media screen and (min-width: 1024px) {
-      display: grid;
-      grid-template-rows: auto;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-gap: 30px;
+    .thumbnail-detail {
+      width: 50%;
+      height: 300px;
     }
   }
 `
@@ -57,6 +51,8 @@ export type IResArticles = {
   pillarName: string
   fields?: {
     thumbnail: string
+    headline: string
+    body: string
   }
 }
 
@@ -74,13 +70,22 @@ const onSearch = (val: string) => {
 
 const getArticle = (id: string) => {
   return getByID(`/${id}`, {
-    'show-fields': 'thumbnail',
+    'show-fields': `thumbnail,headline,body`,
+    'show-elements': `image,audio`,
   }).then((response) => response)
+}
+
+const formatDate = (userDate: Date) => {
+  const dateTime = moment(userDate)
+    .tz('Europe/London')
+    .format('ddd DD MMM YYYY HH.MM zz')
+    .toLocaleUpperCase()
+  return dateTime
 }
 
 const ArticlePage: React.FC = () => {
   const location = useLocation<ILocation>()
-  const [articles, setArticles] = useState<IResArticles[]>([])
+  const [articles, setArticles] = useState<IResArticles>()
 
   useEffect(() => {
     async function fetchAPI() {
@@ -89,9 +94,7 @@ const ArticlePage: React.FC = () => {
     }
 
     fetchAPI()
-  }, [])
-
-  console.log(`articles`, articles)
+  }, [location])
 
   return (
     <Layout onSearch={onSearch}>
@@ -100,7 +103,28 @@ const ArticlePage: React.FC = () => {
           <img src={bookMark} alt='bookMark' />
           <span> VIEW BOOKMARK</span>
         </Button>
-        <section className='top'></section>
+        <div className='detail'>
+          <div className='content-detail'>
+            {articles?.webPublicationDate && (
+              <span className='date'>
+                {formatDate(articles?.webPublicationDate)}
+              </span>
+            )}
+            <h1>{articles?.webTitle}</h1>
+            <h3>{articles?.fields?.headline}</h3>
+            <div className='body'>
+              <hr />
+              {articles?.fields && HtmlParser(articles?.fields?.body)}
+            </div>
+          </div>
+          {articles?.fields?.thumbnail && (
+            <img
+              className='thumbnail-detail'
+              src={articles?.fields?.thumbnail}
+              alt='thumbnail'
+            />
+          )}
+        </div>
       </Content>
     </Layout>
   )

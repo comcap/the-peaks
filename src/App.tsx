@@ -5,6 +5,7 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom'
+import moment from 'moment-timezone'
 
 import { Loader } from 'components/output'
 import * as Pages from 'pages'
@@ -12,6 +13,8 @@ import * as Pages from 'pages'
 import './App.scss'
 
 const App: React.FC = () => {
+  moment().tz('Europe/London')
+
   return (
     <Router>
       <Suspense fallback={<Loader />}>

@@ -17,7 +17,11 @@ const Content = styled.div`
         grid-gap: 30px;
 
         .first {
-          height: 312px;
+          height: 512px;
+        }
+
+        .sec {
+          min-height: 240px;
         }
       }
     }
@@ -55,7 +59,14 @@ export type IResArticles = {
   pillarName: string
   fields?: {
     thumbnail: string
+    body: string
+    bodyText: string
   }
+  // blocks: {
+  //   requestedBodyBlocks: {
+  //     ['body:latest:1']: IBodyBlocks[]
+  //   }
+  // }
 }
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
@@ -68,31 +79,33 @@ const onSearch = (val: string) => {
   console.log(`val`, val)
 }
 
+const showFields = 'thumbnail,body'
 const getNewsArticles = () => {
   return getList('/search', {
+    'page-size': 8,
     section: 'news',
-    'show-fields': 'thumbnail',
+    'show-fields': 'all',
   }).then((response) => response)
 }
 
 const getSportsArticles = () => {
   return getList('/search', {
     section: 'sport',
-    'show-fields': 'thumbnail',
+    'show-fields': showFields,
   }).then((response) => response)
 }
 
 const getCulturesArticles = () => {
   return getList('/search', {
     section: 'culture',
-    'show-fields': 'thumbnail',
+    'show-fields': showFields,
   }).then((response) => response)
 }
 
 const getLifeAndStyleArticles = () => {
   return getList('/search', {
     section: 'lifeandstyle',
-    'show-fields': 'thumbnail',
+    'show-fields': showFields,
   }).then((response) => response)
 }
 
@@ -106,6 +119,8 @@ const HomePages: React.FC = () => {
   const [articlesLifeAndStyle, setLifeAndStyleArticles] = useState<
     IResArticles[]
   >([])
+
+  console.log(`articles`, articles[0])
 
   useEffect(() => {
     async function fetchAPI() {
@@ -152,7 +167,6 @@ const HomePages: React.FC = () => {
               <Article
                 key={index}
                 onClick={() => {
-                  console.log(`article.id`, `article/${article.id}`)
                   history.push({
                     pathname: '/article',
                     state: { id: article.id },
@@ -160,9 +174,11 @@ const HomePages: React.FC = () => {
                 }}
                 className='first'
                 title={article.webTitle}
+                body={article.fields?.bodyText}
                 thumbnail={article.fields?.thumbnail}
               />
             ))}
+
           <section className='sec-fifth'>
             {articles
               .filter(
@@ -173,8 +189,12 @@ const HomePages: React.FC = () => {
                 <Article
                   key={index}
                   onClick={() => {
-                    history.push(`article/${article.id}`)
+                    history.push({
+                      pathname: '/article',
+                      state: { id: article.id },
+                    })
                   }}
+                  className='sec'
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
                 />
@@ -196,9 +216,13 @@ const HomePages: React.FC = () => {
                 <Article
                   key={index}
                   onClick={() => {
-                    history.push(`article/${article.id}`)
+                    history.push({
+                      pathname: '/article',
+                      state: { id: article.id },
+                    })
                   }}
                   title={article.webTitle}
+                  body={article.fields?.bodyText}
                   thumbnail={article.fields?.thumbnail}
                 />
               )
@@ -217,7 +241,10 @@ const HomePages: React.FC = () => {
                 <Article
                   key={articleIndex}
                   onClick={() => {
-                    history.push(`article/${article.id}`)
+                    history.push({
+                      pathname: '/article',
+                      state: { id: article.id },
+                    })
                   }}
                   title={article.webTitle}
                   thumbnail={article.fields?.thumbnail}
