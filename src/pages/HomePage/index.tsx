@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { getList } from 'core/action/collection'
-import { Layout, ContentHeader } from 'components/layout'
-import { Article } from 'components/output'
+import {
+  Layout,
+  ContentHeader,
+  ContentHomepage,
+  ContentSearchPage,
+} from 'components/layout'
+import { Loader, ARC } from 'components/output'
 
 const Content = styled.div`
   section {
@@ -17,7 +21,7 @@ const Content = styled.div`
         grid-gap: 30px;
 
         .first {
-          height: 512px;
+          height: 100%;
         }
 
         .sec {
@@ -45,214 +49,132 @@ const Content = styled.div`
   }
 `
 
-export type IResArticles = {
-  id: string
-  type: string
-  sectionId: string
-  sectionName: string
-  webPublicationDate: Date
-  webTitle: string
-  webUrl: string
-  apiUrl: string
-  isHosted: boolean
-  pillarId: string
-  pillarName: string
-  fields?: {
-    thumbnail: string
-    body: string
-    bodyText: string
-  }
-  // blocks: {
-  //   requestedBodyBlocks: {
-  //     ['body:latest:1']: IBodyBlocks[]
-  //   }
-  // }
-}
-
-export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
-
-const onSelectFilter = (val: string) => {
-  console.log(`val`, val)
-}
-
-const onSearch = (val: string) => {
-  console.log(`val`, val)
-}
-
 const showFields = 'thumbnail,body'
-const getNewsArticles = () => {
+
+const getSearchArticles = (key: string, order: string) => {
+  return getList('/search', {
+    q: key,
+    section: 'news',
+    'show-fields': 'all',
+    'order-by': order,
+  }).then((response) => response)
+}
+
+const getNewsArticles = (order: string) => {
   return getList('/search', {
     'page-size': 8,
     section: 'news',
     'show-fields': 'all',
+    'order-by': order,
   }).then((response) => response)
 }
 
-const getSportsArticles = () => {
+const getSportsArticles = (order: string) => {
   return getList('/search', {
     section: 'sport',
     'show-fields': showFields,
+    'order-by': order,
   }).then((response) => response)
 }
 
-const getCulturesArticles = () => {
+const getCulturesArticles = (order: string) => {
   return getList('/search', {
     section: 'culture',
     'show-fields': showFields,
+    'order-by': order,
   }).then((response) => response)
 }
 
-const getLifeAndStyleArticles = () => {
+const getLifeAndStyleArticles = (order: string) => {
   return getList('/search', {
     section: 'lifeandstyle',
     'show-fields': showFields,
+    'order-by': order,
   }).then((response) => response)
 }
 
 const HomePages: React.FC = () => {
-  const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
-
-  const history = useHistory()
-  const [articles, setArticles] = useState<IResArticles[]>([])
-  const [articlesSport, setSportArticles] = useState<IResArticles[]>([])
-  const [articlesCultures, setCulturesArticles] = useState<IResArticles[]>([])
+  const [articles, setArticles] = useState<ARC.IResArticles[]>([])
+  const [articlesSport, setSportArticles] = useState<ARC.IResArticles[]>([])
+  const [articlesCultures, setCulturesArticles] = useState<ARC.IResArticles[]>(
+    [],
+  )
   const [articlesLifeAndStyle, setLifeAndStyleArticles] = useState<
-    IResArticles[]
+    ARC.IResArticles[]
   >([])
-
-  console.log(`articles`, articles[0])
+  const [order, setOrder] = useState('newest')
+  const [keyword, setKeyword] = useState('')
+  const [isloading, setIsLoading] = useState(true)
+  const [search, setSearch] = useState<ARC.IResArticles[] | null>(null)
 
   useEffect(() => {
     async function fetchAPI() {
-      const news = await getNewsArticles()
-      const sport = await getSportsArticles()
-      const cultures = await getCulturesArticles()
-      const LAS = await getLifeAndStyleArticles()
+      const news = await getNewsArticles(order)
+      const sport = await getSportsArticles(order)
+      const cultures = await getCulturesArticles(order)
+      const LAS = await getLifeAndStyleArticles(order)
 
       setArticles(news)
       setSportArticles(sport)
       setCulturesArticles(cultures)
       setLifeAndStyleArticles(LAS)
+      setIsLoading(false)
     }
 
     fetchAPI()
-  }, [])
+  }, [order])
 
-  const renderCategory = (key: ICategory) => {
-    const obj = {
-      sports: {
-        title: 'Sports',
-        articles: articlesSport,
-      },
-      cultures: {
-        title: 'Cultures',
-        articles: articlesCultures,
-      },
-      lifeAndStyle: {
-        title: 'LifeAndStyle',
-        articles: articlesLifeAndStyle,
-      },
+  useEffect(() => {
+    async function fetchAPI() {
+      const news = await getSearchArticles(keyword, order)
+
+      setSearch(news)
+      setIsLoading(false)
     }
-    return obj[key]
+    if (keyword) {
+      const timeOutId = setTimeout(() => fetchAPI(), 1000)
+      return () => clearTimeout(timeOutId)
+    } else {
+      setSearch(null)
+    }
+  }, [keyword, order])
+
+  const onSearch = (val: string) => {
+    setIsLoading(true)
+    setKeyword(val)
+  }
+
+  const onSelectFilter = (val: string) => {
+    setIsLoading(true)
+    setOrder(val)
   }
 
   return (
     <Layout onSearch={onSearch}>
       <Content>
-        <ContentHeader title='Top stories' onFilter={onSelectFilter} />
-        <section className='top'>
-          {articles
-            .filter((_, index) => index === 0)
-            .map((article, index) => (
-              <Article
-                key={index}
-                onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
-                  })
-                }}
-                className='first'
-                title={article.webTitle}
-                body={article.fields?.bodyText}
-                thumbnail={article.fields?.thumbnail}
-              />
-            ))}
-
-          <section className='sec-fifth'>
-            {articles
-              .filter(
-                (_, index) =>
-                  index === 1 || index === 2 || index === 3 || index === 4,
-              )
-              .map((article, index) => (
-                <Article
-                  key={index}
-                  onClick={() => {
-                    history.push({
-                      pathname: '/article',
-                      state: { id: article.id },
-                    })
-                  }}
-                  className='sec'
-                  title={article.webTitle}
-                  thumbnail={article.fields?.thumbnail}
-                />
-              ))}
-          </section>
-        </section>
-        <section className='more'>
-          {articles
-            .filter(
-              (_, index) =>
-                index !== 0 &&
-                index !== 1 &&
-                index !== 2 &&
-                index !== 3 &&
-                index !== 4,
-            )
-            .map((article, index) => {
-              return (
-                <Article
-                  key={index}
-                  onClick={() => {
-                    history.push({
-                      pathname: '/article',
-                      state: { id: article.id },
-                    })
-                  }}
-                  title={article.webTitle}
-                  body={article.fields?.bodyText}
-                  thumbnail={article.fields?.thumbnail}
-                />
-              )
-            })}
-        </section>
-        {category.map((cate, index) => (
+        {!isloading ? (
           <>
-            <ContentHeader
-              key={index}
-              title={renderCategory(cate).title}
-              showBookMark={false}
-              showFilter={false}
-            />
-            <section>
-              {renderCategory(cate).articles.map((article, articleIndex) => (
-                <Article
-                  key={articleIndex}
-                  onClick={() => {
-                    history.push({
-                      pathname: '/article',
-                      state: { id: article.id },
-                    })
-                  }}
-                  title={article.webTitle}
-                  thumbnail={article.fields?.thumbnail}
+            {search ? (
+              <ContentSearchPage onFilter={onSelectFilter} articles={search} />
+            ) : (
+              <>
+                <ContentHeader
+                  title='Top stories'
+                  filterValue={order}
+                  onFilter={onSelectFilter}
                 />
-              ))}
-            </section>
+                <ContentHomepage
+                  top={articles}
+                  sport={articlesSport}
+                  cultures={articlesCultures}
+                  lifeAndStyle={articlesLifeAndStyle}
+                />
+              </>
+            )}
           </>
-        ))}
+        ) : (
+          <Loader />
+        )}
       </Content>
     </Layout>
   )

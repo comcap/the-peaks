@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
+import { SnackBar } from 'components/output'
 
 const LayoutHeader = styled.div`
   display: flex;
@@ -37,6 +38,7 @@ export type IPropsLayoutHeader = {
   title?: string
   showBookMark?: boolean
   showFilter?: boolean
+  filterValue?: string
   onFilter?: (val: string) => void
 }
 
@@ -45,6 +47,7 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
   showBookMark,
   showFilter,
   onFilter,
+  filterValue,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onFilter && onFilter(e.target.value)
@@ -54,18 +57,17 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
     <LayoutHeader>
       <h1>{title}</h1>
       <div className='filter'>
-        {showBookMark && (
-          <Button>
+        {/* {showBookMark && (
+          <Button onClick={() => <SnackBar />}>
             <img src={bookMark} alt='bookMark' />
             <span> VIEW BOOKMARK</span>
           </Button>
-        )}
+        )} */}
 
         {showFilter && (
-          <select onChange={handleChange}>
-            <option value='new'>Newest first</option>
-            <option value='old'>Oldest first</option>
-            <option value='most'>Most popular</option>
+          <select value={filterValue} onChange={handleChange}>
+            <option value='newest'>Newest first</option>
+            <option value='oldest'>Oldest first</option>
           </select>
         )}
       </div>
