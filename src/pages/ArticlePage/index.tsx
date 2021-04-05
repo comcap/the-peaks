@@ -3,12 +3,13 @@ import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import HtmlParser from 'react-html-parser'
 import moment from 'moment'
+import { getList } from 'core/action/collection'
 
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
-import { SnackBar } from 'components/output'
+import { SnackBar, Loader, ARC } from 'components/output'
 import { getByID } from 'core/action/collection'
-import { Layout } from 'components/layout'
+import { Layout, ContentSearchPage } from 'components/layout'
 
 const Content = styled.div`
   padding-top: 60px;
@@ -73,32 +74,8 @@ const Content = styled.div`
   }
 `
 
-export type IResArticles = {
-  id: string
-  type: string
-  sectionId: string
-  sectionName: string
-  webPublicationDate: Date
-  webTitle: string
-  webUrl: string
-  apiUrl: string
-  isHosted: boolean
-  pillarId: string
-  pillarName: string
-  fields?: {
-    thumbnail: string
-    headline: string
-    body: string
-    main: string
-  }
-}
-
 export type ILocation = {
   id: string
-}
-
-const onSearch = (val: string) => {
-  console.log(`val`, val)
 }
 
 const getArticle = (id: string) => {
@@ -118,14 +95,29 @@ const formatDate = (userDate: Date) => {
 
 const ArticlePage: React.FC = () => {
   const location = useLocation<ILocation>()
-  const [articles, setArticles] = useState<IResArticles>()
-  // const [showSnackBar, setShowSnackBar] = useState<boolean>(false)
+  const [articles, setArticles] = useState<ARC.IResArticles>()
+  const [showSnackBar, setShowSnackBar] = useState<boolean>(false)
+
+  const [order, setOrder] = useState('newest')
+  const [keyword, setKeyword] = useState('')
+  const [isloading, setIsLoading] = useState(true)
+  const [search, setSearch] = useState<ARC.IResArticles[] | null>(null)
+
   // const [showSnackBar, setShowSnackBar] = useState<string>(
   //   localStorage.getItem('bookmarks')
   // )
   // localStorage.setItem('bookmarks',)
+
+  const getSearchArticles = (key: string, order: string) => {
+    return getList('/search', {
+      q: key,
+      section: 'news',
+      'show-fields': 'all',
+      'order-by': order,
+    }).then((response) => response)
+  }
+
   const onClickBookmark = () => {
-    console.log(`articles`, articles?.apiUrl)
     setShowSnackBar(true)
     setTimeout(() => {
       setShowSnackBar(false)
@@ -135,41 +127,82 @@ const ArticlePage: React.FC = () => {
   useEffect(() => {
     async function fetchAPI() {
       const news = await getArticle(location.state.id)
+
       setArticles(news)
+      setIsLoading(false)
     }
 
     fetchAPI()
   }, [location])
 
+  useEffect(() => {
+    async function fetchAPI() {
+      const news = await getSearchArticles(keyword, order)
+
+      setSearch(news)
+      setIsLoading(false)
+    }
+    if (keyword) {
+      const timeOutId = setTimeout(() => fetchAPI(), 1000)
+      return () => clearTimeout(timeOutId)
+    } else {
+      setSearch(null)
+    }
+  }, [keyword, order])
+
+  const onSearch = (val: string) => {
+    setIsLoading(true)
+    setKeyword(val)
+  }
+
+  const onSelectFilter = (val: string) => {
+    setIsLoading(true)
+    setOrder(val)
+  }
+
   return (
     <Layout onSearch={onSearch}>
       <Content>
-        <SnackBar message='the article has been save' show={showSnackBar} />
-        <Button onClick={() => onClickBookmark()}>
-          <img src={bookMark} alt='bookMark' />
-          <span> VIEW BOOKMARK</span>
-        </Button>
-        <div className='detail'>
-          <div className='content-detail'>
-            {articles?.webPublicationDate && (
-              <span className='date'>
-                {formatDate(articles?.webPublicationDate)}
-              </span>
-            )}
-            <h1>{articles?.webTitle}</h1>
-            <h3>{articles?.fields?.headline}</h3>
-            <div className='body'>
-              <hr />
-              <div className='thumbnail-inside-detail'>
-                {articles?.fields?.main && HtmlParser(articles?.fields?.main)}
+        {!isloading ? (
+          search ? (
+            <ContentSearchPage onFilter={onSelectFilter} articles={search} />
+          ) : (
+            <>
+              <SnackBar
+                message='the article has been save'
+                show={showSnackBar}
+              />
+              <Button onClick={() => onClickBookmark()}>
+                <img src={bookMark} alt='bookMark' />
+                <span> VIEW BOOKMARK</span>
+              </Button>
+              <div className='detail'>
+                <div className='content-detail'>
+                  {articles?.webPublicationDate && (
+                    <span className='date'>
+                      {formatDate(articles?.webPublicationDate)}
+                    </span>
+                  )}
+                  <h1>{articles?.webTitle}</h1>
+                  <h3>{articles?.fields?.headline}</h3>
+                  <div className='body'>
+                    <hr />
+                    <div className='thumbnail-inside-detail'>
+                      {articles?.fields?.main &&
+                        HtmlParser(articles?.fields?.main)}
+                    </div>
+                    {articles?.fields && HtmlParser(articles?.fields?.body)}
+                  </div>
+                </div>
+                <div className='thumbnail-outside-detail'>
+                  {articles?.fields?.main && HtmlParser(articles?.fields?.main)}
+                </div>
               </div>
-              {articles?.fields && HtmlParser(articles?.fields?.body)}
-            </div>
-          </div>
-          <div className='thumbnail-outside-detail'>
-            {articles?.fields?.main && HtmlParser(articles?.fields?.main)}
-          </div>
-        </div>
+            </>
+          )
+        ) : (
+          <Loader />
+        )}
       </Content>
     </Layout>
   )

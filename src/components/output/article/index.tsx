@@ -10,6 +10,27 @@ export type IArticle = {
   onClick?: () => void
 }
 
+export type IResArticles = {
+  id: string
+  type: string
+  sectionId: string
+  sectionName: string
+  webPublicationDate: Date
+  webTitle: string
+  webUrl: string
+  apiUrl: string
+  isHosted: boolean
+  pillarId: string
+  pillarName: string
+  fields?: {
+    thumbnail: string
+    bodyText: string
+    headline: string
+    body: string
+    main: string
+  }
+}
+
 const ArticleStyle = styled.div`
   position: relative;
   cursor: pointer;
@@ -72,7 +93,7 @@ const ArticleStyle = styled.div`
   }
 `
 
-const Article: React.FC<IArticle> = ({
+export const Article: React.FC<IArticle> = ({
   onClick,
   className,
   title,
@@ -93,5 +114,3 @@ const Article: React.FC<IArticle> = ({
     </ArticleStyle>
   )
 }
-
-export default Article

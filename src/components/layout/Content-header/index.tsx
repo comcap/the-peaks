@@ -38,6 +38,7 @@ export type IPropsLayoutHeader = {
   title?: string
   showBookMark?: boolean
   showFilter?: boolean
+  filterValue?: string
   onFilter?: (val: string) => void
 }
 
@@ -46,6 +47,7 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
   showBookMark,
   showFilter,
   onFilter,
+  filterValue,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onFilter && onFilter(e.target.value)
@@ -63,10 +65,9 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
         )} */}
 
         {showFilter && (
-          <select onChange={handleChange}>
-            <option value='new'>Newest first</option>
-            <option value='old'>Oldest first</option>
-            <option value='most'>Most popular</option>
+          <select value={filterValue} onChange={handleChange}>
+            <option value='newest'>Newest first</option>
+            <option value='oldest'>Oldest first</option>
           </select>
         )}
       </div>

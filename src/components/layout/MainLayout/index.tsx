@@ -37,6 +37,8 @@ const MainLayout = styled.div`
         &::placeholder {
           color: #5e82bc;
         }
+        color: var(--white);
+
         align-self: flex-end;
         background-color: var(--secondary);
         width: 80px;

@@ -1,5 +1,5 @@
 import Loader from './loader'
-import Article from './article'
+import * as ARC from './article'
 import SnackBar from './snackbar'
 
-export { Loader, Article, SnackBar }
+export { Loader, ARC, SnackBar }
