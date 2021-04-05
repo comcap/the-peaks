@@ -11,7 +11,7 @@ export type IPropsSearch = {
 
 const ContentSearch: React.FC<IPropsSearch> = ({ articles, onFilter }) => {
   const history = useHistory()
-  console.log(`articles`, articles)
+
   return (
     <div>
       <ContentHeader onFilter={onFilter} title='Search results' />

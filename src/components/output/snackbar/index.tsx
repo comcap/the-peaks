@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import styled from 'styled-components'
 import classnames from 'classnames'
 
@@ -73,7 +72,6 @@ export type IPropsSnackbar = {
 }
 
 const Snackbar: React.FC<IPropsSnackbar> = ({ message, show }) => {
-  console.log(`show`, show)
   return (
     <SnackbarStyle className={classnames({ show })}>{message}</SnackbarStyle>
   )
