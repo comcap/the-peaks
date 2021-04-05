@@ -1,8 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import bookMark from 'assets/bookmarkon-icon@2x.svg'
-import { Button } from 'components/input'
-import { SnackBar } from 'components/output'
 
 const LayoutHeader = styled.div`
   display: flex;
