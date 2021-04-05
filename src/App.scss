@@ -1,0 +1,60 @@
+@import './assets/variables/color';
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: var(--darkslategray);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+.title {
+  font-family: Georgia, serif;
+}
+
+input {
+  outline: none;
+}
+
+.body p {
+  margin: 0;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 1.4rem;
+  @media screen and (min-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+.container {
+  position: relative;
+  margin: 0 auto;
+  min-width: 280px;
+  max-width: 600px;
+  padding: 0 20px 20px 20px;
+
+  @media screen and (min-width: 1024px) {
+    max-width: 1000px;
+  }
+  @media screen and (min-width: 1400px) {
+    max-width: 1200px;
+  }
+}
