@@ -1,5 +1,3 @@
-# The Peaks
-
 Web application news and media from api The Guardian Open platform
 
 ### `include`
