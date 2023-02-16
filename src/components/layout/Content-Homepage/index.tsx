@@ -1,105 +1,128 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
-import { ARC } from 'components/output'
+import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
+import { Article } from 'components/output'
 import { ContentHeader } from 'components/layout'
+import { IResArticles } from 'components/output/article/type'
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
 export type IPropsHome = {
-  top: ARC.IResArticles[]
-  sport: ARC.IResArticles[]
-  cultures: ARC.IResArticles[]
-  lifeAndStyle: ARC.IResArticles[]
+  top: IResArticles[]
+  sport: IResArticles[]
+  cultures: IResArticles[]
+  lifeAndStyle: IResArticles[]
 }
 
 const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
 
-const ContentHome: React.FC<IPropsHome> = ({
-  top,
-  sport,
-  cultures,
-  lifeAndStyle,
-}) => {
-  const history = useHistory()
+const Content = styled.div`
+  section {
+    &.top,
+    &.sec-fifth {
+      @media screen and (min-width: 1024px) {
+        .top-item:first-child {
+          height: 100%;
+          min-height: 0px;
+        }
+
+        display: grid;
+        grid-template-rows: auto;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 30px;
+        min-height: 240px;
+      }
+    }
+
+    &.more {
+      margin-top: 30px;
+      @media screen and (min-width: 1024px) {
+        display: grid;
+        grid-template-rows: auto;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 30px;
+      }
+    }
+
+    @media screen and (min-width: 1024px) {
+      display: grid;
+      grid-template-rows: auto;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-gap: 30px;
+    }
+  }
+`
+
+const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle }) => {
+  const navigate = useNavigate()
 
   const renderCategory = (key: ICategory) => {
     const obj = {
       sports: {
         title: 'Sports',
-        articles: sport,
+        articles: sport
       },
       cultures: {
         title: 'Cultures',
-        articles: cultures,
+        articles: cultures
       },
       lifeAndStyle: {
         title: 'LifeAndStyle',
-        articles: lifeAndStyle,
-      },
+        articles: lifeAndStyle
+      }
     }
     return obj[key]
   }
 
   return (
-    <div>
-      <section className='top'>
+    <Content>
+      <section className="top">
         {top
           .filter((_, index) => index === 0)
           .map((article, index) => (
-            <ARC.Article
+            <Article
               key={index}
               onClick={() => {
-                history.push({
-                  pathname: '/article',
-                  state: { id: article.id },
+                navigate('/article', {
+                  state: { id: article.id }
                 })
               }}
-              className='first'
+              className="top-item"
               title={article.webTitle}
               body={article.fields?.bodyText}
               thumbnail={article.fields?.thumbnail}
             />
           ))}
 
-        <section className='sec-fifth'>
+        <section className="sec-fifth">
           {top
-            .filter(
-              (_, index) =>
-                index === 1 || index === 2 || index === 3 || index === 4,
-            )
+            .filter((_, index) => index === 1 || index === 2 || index === 3 || index === 4)
             .map((article, index) => (
-              <ARC.Article
+              <Article
                 key={index}
                 onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
+                  navigate('/article', {
+                    state: { id: article.id }
                   })
                 }}
-                className='sec'
+                className="sec"
                 title={article.webTitle}
                 thumbnail={article.fields?.thumbnail}
               />
             ))}
         </section>
       </section>
-      <section className='more'>
+      <section className="more">
         {top
           .filter(
-            (_, index) =>
-              index !== 0 &&
-              index !== 1 &&
-              index !== 2 &&
-              index !== 3 &&
-              index !== 4,
+            (_, index) => index !== 0 && index !== 1 && index !== 2 && index !== 3 && index !== 4
           )
           .map((article, index) => {
             return (
-              <ARC.Article
+              <Article
                 key={index}
                 onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
+                  navigate('/article', {
+                    state: { id: article.id }
                   })
                 }}
                 title={article.webTitle}
@@ -118,12 +141,11 @@ const ContentHome: React.FC<IPropsHome> = ({
           />
           <section>
             {renderCategory(cate).articles.map((article, articleIndex) => (
-              <ARC.Article
+              <Article
                 key={articleIndex}
                 onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
+                  navigate('/article', {
+                    state: { id: article.id }
                   })
                 }}
                 title={article.webTitle}
@@ -133,7 +155,7 @@ const ContentHome: React.FC<IPropsHome> = ({
           </section>
         </div>
       ))}
-    </div>
+    </Content>
   )
 }
 

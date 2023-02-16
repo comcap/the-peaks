@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import LogoWhite from 'assets/Logo-white.png'
 import searchWhite from 'assets/search-icon@2x.svg'
@@ -61,42 +61,36 @@ const MainLayout = styled.div`
 `
 
 type IPropsLayout = {
+  children: JSX.Element
   onSearch: (val: string) => void
 }
 
 const Layout: React.FC<IPropsLayout> = ({ children, onSearch }) => {
   const [showSearch, setShowSearch] = useState(false)
-  const history = useHistory()
+  const navigate = useNavigate()
+
   return (
     <MainLayout>
       <header>
-        <div className='container'>
-          <img
-            className='logo'
-            src={LogoWhite}
-            alt='LogoWhite'
-            onClick={() => history.push('/')}
-          />
+        <div className="container">
+          <img className="logo" src={LogoWhite} alt="LogoWhite" onClick={() => navigate('/')} />
           {showSearch ? (
             <>
               <input
-                type='text'
+                type="text"
                 onChange={(e) => onSearch(e.target.value)}
-                placeholder='Search all news'
+                placeholder="Search all news"
               />
-              <img className='input-icon' src={searchWhite} alt='searchWhite' />
+              <img className="input-icon" src={searchWhite} alt="searchWhite" />
             </>
           ) : (
-            <div
-              onClick={() => setShowSearch(!showSearch)}
-              className='input-search'
-            >
-              <img src={searchWhite} alt='searchWhite' />
+            <div onClick={() => setShowSearch(!showSearch)} className="input-search">
+              <img src={searchWhite} alt="searchWhite" />
             </div>
           )}
         </div>
       </header>
-      <main className='content container'>{children}</main>
+      <main className="content container">{children}</main>
       <footer />
     </MainLayout>
   )

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import HtmlParser from 'react-html-parser'
-import moment from 'moment'
-import { getList } from 'core/action/collection'
+import ReactHtmlParser from 'react-html-parser'
+import moment from 'moment-timezone'
+import { getList, getByID } from 'core/action/collection'
 
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
 import { Button } from 'components/input'
-import { SnackBar, Loader, ARC } from 'components/output'
-import { getByID } from 'core/action/collection'
+import { IResArticles } from 'components/output/article/type'
+import { SnackBar, Loader } from 'components/output'
 import { Layout, ContentSearchPage } from 'components/layout'
 
 const Content = styled.div`
@@ -74,14 +74,10 @@ const Content = styled.div`
   }
 `
 
-export type ILocation = {
-  id: string
-}
-
 const getArticle = (id: string) => {
   return getByID(`/${id}`, {
     'show-fields': `thumbnail,headline,body,main`,
-    'show-elements': `image,audio`,
+    'show-elements': `image,audio`
   }).then((response) => response)
 }
 
@@ -94,26 +90,26 @@ const formatDate = (userDate: Date) => {
 }
 
 const ArticlePage: React.FC = () => {
-  const location = useLocation<ILocation>()
-  const [articles, setArticles] = useState<ARC.IResArticles>()
+  const location = useLocation()
+  const [articles, setArticles] = useState<IResArticles>()
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false)
 
   const [order, setOrder] = useState('newest')
   const [keyword, setKeyword] = useState('')
   const [isloading, setIsLoading] = useState(true)
-  const [search, setSearch] = useState<ARC.IResArticles[] | null>(null)
+  const [search, setSearch] = useState<IResArticles[] | null>(null)
 
   // const [showSnackBar, setShowSnackBar] = useState<string>(
   //   localStorage.getItem('bookmarks')
   // )
   // localStorage.setItem('bookmarks',)
 
-  const getSearchArticles = (key: string, order: string) => {
+  const getSearchArticles = (key: string, orderBy: string) => {
     return getList('/search', {
       q: key,
       section: 'news',
       'show-fields': 'all',
-      'order-by': order,
+      'order-by': orderBy
     }).then((response) => response)
   }
 
@@ -168,34 +164,32 @@ const ArticlePage: React.FC = () => {
             <ContentSearchPage onFilter={onSelectFilter} articles={search} />
           ) : (
             <>
-              <SnackBar
-                message='the article has been save'
-                show={showSnackBar}
-              />
+              <SnackBar message="the article has been save" show={showSnackBar} />
               <Button onClick={() => onClickBookmark()}>
-                <img src={bookMark} alt='bookMark' />
-                <span> VIEW BOOKMARK</span>
+                <>
+                  <img src={bookMark} alt="bookMark" />
+                  <span> VIEW BOOKMARK</span>
+                </>
               </Button>
-              <div className='detail'>
-                <div className='content-detail'>
+              <div className="detail">
+                <div className="content-detail">
                   {articles?.webPublicationDate && (
-                    <span className='date'>
-                      {formatDate(articles?.webPublicationDate)}
-                    </span>
+                    <span className="date">{formatDate(articles?.webPublicationDate)}</span>
                   )}
                   <h1>{articles?.webTitle}</h1>
                   <h3>{articles?.fields?.headline}</h3>
-                  <div className='body'>
-                    <hr />
-                    <div className='thumbnail-inside-detail'>
-                      {articles?.fields?.main &&
-                        HtmlParser(articles?.fields?.main)}
-                    </div>
-                    {articles?.fields && HtmlParser(articles?.fields?.body)}
+                  <div className="body">
+                    <>
+                      <hr />
+                      <div className="thumbnail-inside-detail">
+                        <>{articles?.fields?.main && ReactHtmlParser(articles?.fields?.main)}</>
+                      </div>
+                      <>{articles?.fields && ReactHtmlParser(articles?.fields?.body)}</>
+                    </>
                   </div>
                 </div>
-                <div className='thumbnail-outside-detail'>
-                  {articles?.fields?.main && HtmlParser(articles?.fields?.main)}
+                <div className="thumbnail-outside-detail">
+                  <>{articles?.fields?.main && ReactHtmlParser(articles?.fields?.main)}</>
                 </div>
               </div>
             </>

@@ -1,4 +1,6 @@
 import { lazy } from 'react'
 
-export const HomePage = lazy(() => import('./HomePage'))
-export const ArticlePage = lazy(() => import('./ArticlePage'))
+const HomePage = lazy(() => import('./HomePage'))
+const ArticlePage = lazy(() => import('./ArticlePage'))
+
+export { HomePage, ArticlePage }

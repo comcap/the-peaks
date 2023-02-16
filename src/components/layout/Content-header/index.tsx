@@ -41,10 +41,10 @@ export type IPropsLayoutHeader = {
 
 const ContentHeader: React.FC<IPropsLayoutHeader> = ({
   title,
-  showBookMark,
+  // showBookMark,
   showFilter,
   onFilter,
-  filterValue,
+  filterValue
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onFilter && onFilter(e.target.value)
@@ -53,7 +53,7 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
   return (
     <LayoutHeader>
       <h1>{title}</h1>
-      <div className='filter'>
+      <div className="filter">
         {/* {showBookMark && (
           <Button onClick={() => <SnackBar />}>
             <img src={bookMark} alt='bookMark' />
@@ -63,8 +63,8 @@ const ContentHeader: React.FC<IPropsLayoutHeader> = ({
 
         {showFilter && (
           <select value={filterValue} onChange={handleChange}>
-            <option value='newest'>Newest first</option>
-            <option value='oldest'>Oldest first</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
           </select>
         )}
       </div>
@@ -76,7 +76,7 @@ ContentHeader.defaultProps = {
   title: 'Title',
   showBookMark: true,
   showFilter: true,
-  onFilter: () => {},
+  onFilter: () => {}
 }
 
 export default ContentHeader

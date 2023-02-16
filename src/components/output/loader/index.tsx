@@ -32,7 +32,7 @@ const Spiner = styled.div`
 const DefaultLoader: React.FC = () => {
   return (
     <Spiner>
-      <div className='loader'></div>
+      <div className="loader"></div>
     </Spiner>
   )
 }

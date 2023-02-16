@@ -1,35 +1,8 @@
-import htmlParser from 'react-html-parser'
+import ReactHtmlParser from 'react-html-parser'
+
 import styled from 'styled-components'
 import LogoWhite from 'assets/Logo-white.png'
-
-export type IArticle = {
-  title: string
-  thumbnail?: string
-  body?: string
-  className?: string
-  onClick?: () => void
-}
-
-export type IResArticles = {
-  id: string
-  type: string
-  sectionId: string
-  sectionName: string
-  webPublicationDate: Date
-  webTitle: string
-  webUrl: string
-  apiUrl: string
-  isHosted: boolean
-  pillarId: string
-  pillarName: string
-  fields?: {
-    thumbnail: string
-    bodyText: string
-    headline: string
-    body: string
-    main: string
-  }
-}
+import { IArticle } from './type'
 
 const ArticleStyle = styled.div`
   position: relative;
@@ -93,24 +66,22 @@ const ArticleStyle = styled.div`
   }
 `
 
-export const Article: React.FC<IArticle> = ({
-  onClick,
-  className,
-  title,
-  body,
-  thumbnail,
-}) => {
+const ArticleComponent: React.FC<IArticle> = ({ onClick, className, title, body, thumbnail }) => {
   return (
     <ArticleStyle onClick={onClick} className={className}>
       {thumbnail ? (
-        <img className='img-thumbnail' src={thumbnail} alt='thumbnail' />
+        <img className="img-thumbnail" src={thumbnail} alt="thumbnail" />
       ) : (
-        <img className='img-default' src={LogoWhite} alt='thumbnail' />
+        <img className="img-default" src={LogoWhite} alt="thumbnail" />
       )}
-      <div className='content'>
-        <p className='title'>{title}</p>
-        <div className='body'>{body && htmlParser(body)[0]}</div>
+      <div className="content">
+        <p className="title">{title}</p>
+        <div className="body">
+          <>{body && ReactHtmlParser(body)}</>
+        </div>
       </div>
     </ArticleStyle>
   )
 }
+
+export default ArticleComponent
