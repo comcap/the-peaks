@@ -1,10 +1,11 @@
+import debounce from 'lodash/debounce'
 import { useState } from 'react'
 import { useQueries } from 'react-query'
-import debounce from 'lodash/debounce'
+
+import { ContentHeader, ContentHomepage, ContentSearchPage, Layout } from 'components/layout'
+import { Loader } from 'components/output'
 
 import { getList } from 'core/action/collection'
-import { Layout, ContentHeader, ContentHomepage, ContentSearchPage } from 'components/layout'
-import { Loader } from 'components/output'
 
 const showFields = 'thumbnail,body'
 
@@ -23,38 +24,34 @@ const HomePages: React.FC = () => {
     }
   }
 
-  const fetchNewsArticles = async () => {
-    return await getList('/search', {
+  const fetchNewsArticles = () =>
+    getList('/search', {
       'page-size': 8,
       section: 'news',
       'show-fields': 'all',
       'order-by': order
     }).then((response) => response)
-  }
 
-  const fetchSportsArticles = () => {
-    return getList('/search', {
+  const fetchSportsArticles = () =>
+    getList('/search', {
       section: 'sport',
       'show-fields': showFields,
       'order-by': order
     }).then((response) => response)
-  }
 
-  const fetchCulturesArticles = () => {
-    return getList('/search', {
+  const fetchCulturesArticles = () =>
+    getList('/search', {
       section: 'culture',
       'show-fields': showFields,
       'order-by': order
     }).then((response) => response)
-  }
 
-  const fetchLifeAndStyleArticles = () => {
-    return getList('/search', {
+  const fetchLifeAndStyleArticles = () =>
+    getList('/search', {
       section: 'lifeandstyle',
       'show-fields': showFields,
       'order-by': order
     }).then((response) => response)
-  }
 
   const [newsRes, sportRes, culturesRes, lifeAndStyleRes, searchNewRes] = useQueries([
     {
@@ -88,12 +85,13 @@ const HomePages: React.FC = () => {
   }
 
   return (
-    <Layout onSearch={debounce(onSearch, 500)}>
+    <Layout onSearch={debounce(onSearch, 1500)}>
       <div>
         {!newsRes.isLoading &&
         !sportRes.isLoading &&
         !culturesRes.isLoading &&
-        !lifeAndStyleRes.isLoading ? (
+        !lifeAndStyleRes.isLoading &&
+        !searchNewRes.isLoading ? (
           <>
             {searchNewRes.data ? (
               <ContentSearchPage onFilter={onSelectFilter} articles={searchNewRes.data} />

@@ -3,7 +3,12 @@ export type IArticle = {
   thumbnail?: string
   body?: string
   className?: string
+  flex?: string
+  span?: string
+  height?: string
   onClick?: () => void
+  isOnlyTitle?: boolean
+  section: string
 }
 
 export type IResArticles = {
@@ -24,5 +29,6 @@ export type IResArticles = {
     headline: string
     body: string
     main: string
+    standfirst: string
   }
 }

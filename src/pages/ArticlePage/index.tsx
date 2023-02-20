@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import debounce from 'lodash/debounce'
+import moment from 'moment-timezone'
+import { useEffect, useMemo, useState } from 'react'
+import ReactHtmlParser from 'react-html-parser'
+import { useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import ReactHtmlParser from 'react-html-parser'
-import moment from 'moment-timezone'
-import { getList, getByID } from 'core/action/collection'
+
+import { Button } from 'components/input'
+import { ContentSearchPage, Layout } from 'components/layout'
+import { Loader, SnackBar } from 'components/output'
+import { IResArticles } from 'components/output/article/type'
+
+import { getByID, getList } from 'core/action/collection'
 
 import bookMark from 'assets/bookmarkon-icon@2x.svg'
-import { Button } from 'components/input'
-import { IResArticles } from 'components/output/article/type'
-import { SnackBar, Loader } from 'components/output'
-import { Layout, ContentSearchPage } from 'components/layout'
 
 const Content = styled.div`
   padding-top: 60px;
@@ -74,13 +78,6 @@ const Content = styled.div`
   }
 `
 
-const getArticle = (id: string) => {
-  return getByID(`/${id}`, {
-    'show-fields': `thumbnail,headline,body,main`,
-    'show-elements': `image,audio`
-  }).then((response) => response)
-}
-
 const formatDate = (userDate: Date) => {
   const dateTime = moment(userDate)
     .tz('Europe/London')
@@ -91,27 +88,73 @@ const formatDate = (userDate: Date) => {
 
 const ArticlePage: React.FC = () => {
   const location = useLocation()
-  const [articles, setArticles] = useState<IResArticles>()
+  // const [articles, setArticles] = useState<IResArticles>()
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false)
 
   const [order, setOrder] = useState('newest')
   const [keyword, setKeyword] = useState('')
-  const [isloading, setIsLoading] = useState(true)
-  const [search, setSearch] = useState<IResArticles[] | null>(null)
 
   // const [showSnackBar, setShowSnackBar] = useState<string>(
   //   localStorage.getItem('bookmarks')
   // )
   // localStorage.setItem('bookmarks',)
 
-  const getSearchArticles = (key: string, orderBy: string) => {
-    return getList('/search', {
-      q: key,
-      section: 'news',
-      'show-fields': 'all',
-      'order-by': orderBy
+  const fetchSearchArticles = (): Promise<IResArticles[]> => {
+    if (keyword) {
+      return getList('/search', {
+        q: keyword,
+        'page-size': 15,
+        section: 'news',
+        'show-fields': 'all',
+        'order-by': order
+      }).then((response) => response)
+    } else {
+      return Promise.resolve([])
+    }
+  }
+
+  const fetchArticle = (): Promise<IResArticles> => {
+    return getByID(`/${location.state.id}`, {
+      'show-fields': `thumbnail,headline,body,main`,
+      'show-elements': `image,audio`
     }).then((response) => response)
   }
+
+  const { data: search, isLoading: isLoadingSearch } = useQuery(
+    ['searchNew', keyword, order],
+    fetchSearchArticles
+  )
+
+  const { data: articles, isLoading: isLoadingArticle } = useQuery('article', fetchArticle)
+
+  const [observedEl, setObservedEl] = useState<any>(null)
+
+  console.log('search', search)
+
+  const observer = useMemo(
+    () =>
+      new IntersectionObserver(
+        (items) => {
+          if (items[0].isIntersecting) {
+            console.log('first')
+          }
+        },
+        { threshold: 1 }
+      ),
+    []
+  )
+
+  useEffect(() => {
+    if (observedEl) {
+      observer.observe(observedEl)
+    }
+
+    return () => {
+      if (observedEl) {
+        observer.unobserve(observedEl)
+      }
+    }
+  }, [observedEl, observer])
 
   const onClickBookmark = () => {
     setShowSnackBar(true)
@@ -120,48 +163,24 @@ const ArticlePage: React.FC = () => {
     }, 3000)
   }
 
-  useEffect(() => {
-    async function fetchAPI() {
-      const news = await getArticle(location.state.id)
-
-      setArticles(news)
-      setIsLoading(false)
-    }
-
-    fetchAPI()
-  }, [location])
-
-  useEffect(() => {
-    async function fetchAPI() {
-      const news = await getSearchArticles(keyword, order)
-
-      setSearch(news)
-      setIsLoading(false)
-    }
-    if (keyword) {
-      const timeOutId = setTimeout(() => fetchAPI(), 1000)
-      return () => clearTimeout(timeOutId)
-    } else {
-      setSearch(null)
-    }
-  }, [keyword, order])
-
   const onSearch = (val: string) => {
-    setIsLoading(true)
     setKeyword(val)
   }
 
   const onSelectFilter = (val: string) => {
-    setIsLoading(true)
     setOrder(val)
   }
 
   return (
-    <Layout onSearch={onSearch}>
+    <Layout onSearch={debounce(onSearch, 1500)}>
       <Content>
-        {!isloading ? (
-          search ? (
-            <ContentSearchPage onFilter={onSelectFilter} articles={search} />
+        {!isLoadingSearch && !isLoadingArticle ? (
+          search && search.length > 0 ? (
+            <ContentSearchPage
+              onFilter={onSelectFilter}
+              articles={search}
+              loadRef={setObservedEl}
+            />
           ) : (
             <>
               <SnackBar message="the article has been save" show={showSnackBar} />

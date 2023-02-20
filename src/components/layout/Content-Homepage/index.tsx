@@ -17,38 +17,44 @@ const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
 
 const Content = styled.div`
   section {
-    &.top,
-    &.sec-fifth {
-      @media screen and (min-width: 1024px) {
-        .top-item:first-child {
-          height: 100%;
-          min-height: 0px;
-        }
+    display: flex;
+    &.new {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 30px;
+    }
+    .top-left {
+      flex: 1;
+    }
+    .top-right {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 30px;
+    }
 
+    &.article {
+      @media screen and (min-width: 1024px) {
         display: grid;
-        grid-template-rows: auto;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
         grid-gap: 30px;
-        min-height: 240px;
       }
     }
 
-    &.more {
-      margin-top: 30px;
-      @media screen and (min-width: 1024px) {
+    margin-top: 30px;
+    /* @media screen and (min-width: 1024px) {
         display: grid;
         grid-template-rows: auto;
         grid-template-columns: 1fr 1fr 1fr;
         grid-gap: 30px;
-      }
-    }
+      } */
 
-    @media screen and (min-width: 1024px) {
+    /* @media screen and (min-width: 1024px) {
       display: grid;
       grid-template-rows: auto;
       grid-template-columns: 1fr 1fr 1fr;
       grid-gap: 30px;
-    }
+    } */
   }
 `
 
@@ -75,27 +81,30 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
 
   return (
     <Content>
-      <section className="top">
-        {top
-          .filter((_, index) => index === 0)
-          .map((article, index) => (
-            <Article
-              key={index}
-              onClick={() => {
-                navigate('/article', {
-                  state: { id: article.id }
-                })
-              }}
-              className="top-item"
-              title={article.webTitle}
-              body={article.fields?.bodyText}
-              thumbnail={article.fields?.thumbnail}
-            />
-          ))}
-
-        <section className="sec-fifth">
+      <section className="new">
+        <div className="top-left">
           {top
-            .filter((_, index) => index === 1 || index === 2 || index === 3 || index === 4)
+            .filter((_, index) => index === 0)
+            .map((article, index) => (
+              <Article
+                className="h-100"
+                key={index}
+                onClick={() => {
+                  navigate('/article', {
+                    state: { id: article.id }
+                  })
+                }}
+                flex={'1'}
+                title={article.webTitle}
+                body={article.fields?.standfirst}
+                section={article.sectionId}
+                thumbnail={article.fields?.thumbnail}
+              />
+            ))}
+        </div>
+        <div className="top-right">
+          {top
+            .filter((_, index) => index === 1 || index === 2)
             .map((article, index) => (
               <Article
                 key={index}
@@ -104,14 +113,33 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
                     state: { id: article.id }
                   })
                 }}
-                className="sec"
+                height="255"
                 title={article.webTitle}
+                thumbnail={article.fields?.thumbnail}
+                section={article.sectionId}
+                body={article.fields?.standfirst}
+              />
+            ))}
+          {top
+            .filter((_, index) => index === 3 || index === 4)
+            .map((article, index) => (
+              <Article
+                key={index}
+                onClick={() => {
+                  navigate('/article', {
+                    state: { id: article.id }
+                  })
+                }}
+                isOnlyTitle
+                height="140"
+                title={article.webTitle}
+                section={article.sectionId}
                 thumbnail={article.fields?.thumbnail}
               />
             ))}
-        </section>
+        </div>
       </section>
-      <section className="more">
+      <section className="article">
         {top
           .filter(
             (_, index) => index !== 0 && index !== 1 && index !== 2 && index !== 3 && index !== 4
@@ -125,8 +153,10 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
                     state: { id: article.id }
                   })
                 }}
+                height="350"
                 title={article.webTitle}
-                body={article.fields?.bodyText}
+                body={article.fields?.standfirst}
+                section={article.sectionId}
                 thumbnail={article.fields?.thumbnail}
               />
             )
@@ -139,7 +169,7 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
             showBookMark={false}
             showFilter={false}
           />
-          <section>
+          <section className="article">
             {renderCategory(cate).articles.map((article, articleIndex) => (
               <Article
                 key={articleIndex}
@@ -148,8 +178,11 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
                     state: { id: article.id }
                   })
                 }}
+                height="350"
                 title={article.webTitle}
                 thumbnail={article.fields?.thumbnail}
+                section={article.sectionId}
+                body={article.fields?.standfirst}
               />
             ))}
           </section>

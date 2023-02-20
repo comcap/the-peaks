@@ -1,3 +1,4 @@
+import React, { LegacyRef } from 'react'
 import styled from 'styled-components'
 
 const Spiner = styled.div`
@@ -24,12 +25,11 @@ const Spiner = styled.div`
   }
 `
 
-/* display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center; */
+type IPropsLoader = {
+  ref?: LegacyRef<HTMLDivElement>
+}
 
-const DefaultLoader: React.FC = () => {
+const DefaultLoader: React.FunctionComponent<IPropsLoader> = () => {
   return (
     <Spiner>
       <div className="loader"></div>

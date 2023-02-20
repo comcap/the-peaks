@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
+
+import { Search } from 'components/input'
 
 import LogoWhite from 'assets/Logo-white.png'
-import searchWhite from 'assets/search-icon@2x.svg'
 
 const MainLayout = styled.div`
   header {
@@ -17,36 +18,6 @@ const MainLayout = styled.div`
 
       .logo {
         cursor: pointer;
-      }
-      .input-search {
-        cursor: pointer;
-        text-align: center;
-        align-self: flex-end;
-        width: 80px;
-        border-bottom: 2px solid var(--white);
-        padding-bottom: 6px;
-      }
-
-      .input-icon {
-        position: absolute;
-        right: 30px;
-        bottom: 26px;
-      }
-
-      input {
-        &::placeholder {
-          color: #5e82bc;
-        }
-        color: var(--white);
-
-        align-self: flex-end;
-        background-color: var(--secondary);
-        width: 80px;
-        width: 120px;
-        height: 30px;
-        border: none;
-        border-bottom: 2px solid var(--white);
-        padding: 0px 12px;
       }
     }
   }
@@ -66,28 +37,27 @@ type IPropsLayout = {
 }
 
 const Layout: React.FC<IPropsLayout> = ({ children, onSearch }) => {
-  const [showSearch, setShowSearch] = useState(false)
-  const navigate = useNavigate()
+  const [showSearch, setShowSearch] = useState<boolean>(false)
 
   return (
     <MainLayout>
       <header>
         <div className="container">
-          <img className="logo" src={LogoWhite} alt="LogoWhite" onClick={() => navigate('/')} />
-          {showSearch ? (
-            <>
-              <input
-                type="text"
-                onChange={(e) => onSearch(e.target.value)}
-                placeholder="Search all news"
-              />
-              <img className="input-icon" src={searchWhite} alt="searchWhite" />
-            </>
-          ) : (
-            <div onClick={() => setShowSearch(!showSearch)} className="input-search">
-              <img src={searchWhite} alt="searchWhite" />
-            </div>
-          )}
+          <Link to={'/'} reloadDocument>
+            <img className="logo" src={LogoWhite} alt="LogoWhite" />
+          </Link>
+          <Search
+            showSearch={showSearch}
+            onSearch={(keyword) => {
+              if (!keyword) {
+                setShowSearch(!showSearch)
+              } else {
+                onSearch(keyword)
+              }
+            }}
+            onOpen={() => setShowSearch(!showSearch)}
+            onBlur={() => setShowSearch(!showSearch)}
+          />
         </div>
       </header>
       <main className="content container">{children}</main>
