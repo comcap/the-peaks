@@ -11,16 +11,26 @@ type IPropsSearchComponent = {
 }
 
 const InputButton = styled.div`
+  display: flex;
+  justify-content: center;
   cursor: pointer;
   text-align: center;
   align-self: flex-end;
   width: 80px;
   border-bottom: 2px solid var(--white);
-  padding-bottom: 6px;
+  height: 44px;
+  align-items: center;
+
+  .input-icon {
+    height: 18px;
+  }
 `
 
 const InputSearch = styled.div`
   align-self: flex-end;
+  width: 100%;
+  display: flex;
+
   input {
     &::placeholder {
       color: #5e82bc;
@@ -29,7 +39,7 @@ const InputSearch = styled.div`
 
     align-self: flex-end;
     background-color: var(--secondary);
-    width: 300px;
+    width: 100%;
     height: 44px;
     border: none;
     border-bottom: 2px solid var(--white);
@@ -37,9 +47,19 @@ const InputSearch = styled.div`
   }
 
   .input-icon {
+    height: 18px;
     position: absolute;
     right: 40px;
     bottom: 36px;
+  }
+
+  @media screen and (min-width: 1024px) {
+    width: auto;
+    display: block;
+
+    input {
+      width: 300px;
+    }
   }
 `
 
@@ -64,7 +84,7 @@ const SearchComponent: React.FC<IPropsSearchComponent> = ({
     </InputSearch>
   ) : (
     <InputButton onClick={onOpen}>
-      <img src={searchWhite} alt="searchWhite" />
+      <img className="input-icon" src={searchWhite} alt="searchWhite" />
     </InputButton>
   )
 }

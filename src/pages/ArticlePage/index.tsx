@@ -2,18 +2,15 @@ import debounce from 'lodash/debounce'
 import moment from 'moment-timezone'
 import { useEffect, useMemo, useState } from 'react'
 import ReactHtmlParser from 'react-html-parser'
-import { useQuery } from 'react-query'
+import { useInfiniteQuery, useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { Button } from 'components/input'
-import { ContentSearchPage, Layout } from 'components/layout'
-import { Loader, SnackBar } from 'components/output'
-import { IResArticles } from 'components/output/article/type'
+import { ContentHeader, ContentSearchPage, Layout } from 'components/layout'
+import { Loader } from 'components/output'
+import { IResArticles, IResponse } from 'components/output/article/type'
 
-import { getByID, getList } from 'core/action/collection'
-
-import bookMark from 'assets/bookmarkon-icon@2x.svg'
+import { getByID, getListInfinite } from 'core/action/collection'
 
 const Content = styled.div`
   padding-top: 60px;
@@ -88,28 +85,21 @@ const formatDate = (userDate: Date) => {
 
 const ArticlePage: React.FC = () => {
   const location = useLocation()
-  // const [articles, setArticles] = useState<IResArticles>()
-  const [showSnackBar, setShowSnackBar] = useState<boolean>(false)
 
   const [order, setOrder] = useState('newest')
   const [keyword, setKeyword] = useState('')
 
-  // const [showSnackBar, setShowSnackBar] = useState<string>(
-  //   localStorage.getItem('bookmarks')
-  // )
-  // localStorage.setItem('bookmarks',)
-
-  const fetchSearchArticles = (): Promise<IResArticles[]> => {
+  const fetchSearchArticles = ({ pageParam = 1 }): Promise<IResponse> => {
     if (keyword) {
-      return getList('/search', {
+      return getListInfinite('/search', {
         q: keyword,
+        page: pageParam,
         'page-size': 15,
-        section: 'news',
         'show-fields': 'all',
         'order-by': order
-      }).then((response) => response)
+      }).then((response: IResponse) => response)
     } else {
-      return Promise.resolve([])
+      return Promise.reject()
     }
   }
 
@@ -120,28 +110,32 @@ const ArticlePage: React.FC = () => {
     }).then((response) => response)
   }
 
-  const { data: search, isLoading: isLoadingSearch } = useQuery(
-    ['searchNew', keyword, order],
-    fetchSearchArticles
-  )
+  const {
+    data: search,
+    isLoading: isLoadingSearch,
+    fetchNextPage
+  } = useInfiniteQuery({
+    queryKey: ['searchNew', keyword, order],
+    queryFn: ({ pageParam = 1 }) => fetchSearchArticles({ pageParam }),
+    getNextPageParam: (lastPage) => lastPage.currentPage + 1,
+    enabled: !!keyword
+  })
 
   const { data: articles, isLoading: isLoadingArticle } = useQuery('article', fetchArticle)
 
   const [observedEl, setObservedEl] = useState<any>(null)
-
-  console.log('search', search)
 
   const observer = useMemo(
     () =>
       new IntersectionObserver(
         (items) => {
           if (items[0].isIntersecting) {
-            console.log('first')
+            fetchNextPage()
           }
         },
         { threshold: 1 }
       ),
-    []
+    [fetchNextPage]
   )
 
   useEffect(() => {
@@ -156,13 +150,6 @@ const ArticlePage: React.FC = () => {
     }
   }, [observedEl, observer])
 
-  const onClickBookmark = () => {
-    setShowSnackBar(true)
-    setTimeout(() => {
-      setShowSnackBar(false)
-    }, 3000)
-  }
-
   const onSearch = (val: string) => {
     setKeyword(val)
   }
@@ -171,25 +158,29 @@ const ArticlePage: React.FC = () => {
     setOrder(val)
   }
 
+  const renderContentSearch = () => {
+    return (
+      <>
+        <ContentHeader onFilter={onSelectFilter} title="Search results" />
+        {search?.pages.map((group) => (
+          <ContentSearchPage
+            onFilter={onSelectFilter}
+            articles={group.results}
+            loadRef={setObservedEl}
+          />
+        ))}
+      </>
+    )
+  }
+
   return (
     <Layout onSearch={debounce(onSearch, 1500)}>
       <Content>
         {!isLoadingSearch && !isLoadingArticle ? (
-          search && search.length > 0 ? (
-            <ContentSearchPage
-              onFilter={onSelectFilter}
-              articles={search}
-              loadRef={setObservedEl}
-            />
+          search && search?.pages[0].results.length > 0 ? (
+            renderContentSearch()
           ) : (
             <>
-              <SnackBar message="the article has been save" show={showSnackBar} />
-              <Button onClick={() => onClickBookmark()}>
-                <>
-                  <img src={bookMark} alt="bookMark" />
-                  <span> VIEW BOOKMARK</span>
-                </>
-              </Button>
               <div className="detail">
                 <div className="content-detail">
                   {articles?.webPublicationDate && (

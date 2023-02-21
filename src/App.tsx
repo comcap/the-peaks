@@ -1,10 +1,10 @@
-import { Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import moment from 'moment-timezone'
+import { ArticlePage, HomePage } from 'pages'
+import { Suspense } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
 import { Loader } from 'components/output'
-import { HomePage, ArticlePage } from 'pages'
 
 import './App.scss'
 
@@ -20,10 +20,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/article" element={<ArticlePage />} />
-            {/* <Route
-            path='/system/term-condition'
-            component={Pages.DashboardPage}
-          /> */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Suspense>

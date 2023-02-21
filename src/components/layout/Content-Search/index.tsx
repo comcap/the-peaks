@@ -2,8 +2,6 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { ContentHeader } from 'components/layout'
-// import { Loader } from 'components/output'
 import { Article } from 'components/output'
 import { IResArticles } from 'components/output/article/type'
 
@@ -23,12 +21,11 @@ const Content = styled.section`
   }
 `
 
-const ContentSearch: React.FC<IPropsSearch> = ({ articles, onFilter, loadRef }) => {
+const ContentSearch: React.FC<IPropsSearch> = ({ articles, loadRef }) => {
   const navigate = useNavigate()
 
   return (
     <div>
-      <ContentHeader onFilter={onFilter} title="Search results" />
       <Content>
         {articles.length > 0 ? (
           articles.map((article, articleIndex) => (
@@ -48,9 +45,8 @@ const ContentSearch: React.FC<IPropsSearch> = ({ articles, onFilter, loadRef }) 
         ) : (
           <h3>No Content</h3>
         )}
-        {/* <Loader ref={setObservedEl} /> */}
+        <div ref={loadRef} />
       </Content>
-      <p ref={loadRef}>load</p>
     </div>
   )
 }

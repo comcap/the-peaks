@@ -1,10 +1,12 @@
-import { useMemo } from 'react'
 import get from 'lodash/get'
+import { useMemo } from 'react'
 import ReactHtmlParser from 'react-html-parser'
-
 import styled from 'styled-components'
-import LogoWhite from 'assets/Logo-white.png'
+
 import font from 'core/utils/font.theme'
+
+import LogoWhite from 'assets/Logo-white.png'
+
 import { IArticle } from './type'
 
 type ArticleStyleType = {
@@ -28,6 +30,7 @@ const ArticleStyle = styled.div<ArticleStyleType>`
   background-color: var(--darkslateblue);
   box-shadow: 0px 0px 10px 2px #ccc;
   min-height: 160px;
+  margin-bottom: 30px;
 
   display: flex;
   justify-content: center;
@@ -41,7 +44,7 @@ const ArticleStyle = styled.div<ArticleStyleType>`
   }
 
   &.h-100 {
-    height: 100%;
+    height: 255px;
   }
 
   &.span-12 {
@@ -57,23 +60,11 @@ const ArticleStyle = styled.div<ArticleStyleType>`
     grid-row: 1/3;
   }
 
-  /* @media screen and (min-width: 768px) {
-    min-height: 360px;
-  }
-
-  @media screen and (min-width: 1024px) {
-    margin-bottom: 0px;
-    min-height: 300px;
-  }
-
-  @media screen and (min-width: 1440px) {
-    height: 300px;
-  } */
-
   .img-thumbnail {
     max-width: 100%;
     max-height: 100%;
 
+    width: 100%;
     object-fit: cover;
     height: 100%;
   }
@@ -100,6 +91,7 @@ const ArticleStyle = styled.div<ArticleStyleType>`
     }
 
     .body {
+      display: block;
       padding: 0 14px;
       font-size: ${font.FONT_SIZE_14}px;
     }
@@ -109,6 +101,13 @@ const ArticleStyle = styled.div<ArticleStyleType>`
       height: auto;
       font-size: ${font.FONT_SIZE_24}px;
       padding: 14px 14px 5px 14px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    margin-bottom: 0px;
+    &.h-100 {
+      height: 100%;
     }
   }
 `
@@ -152,9 +151,9 @@ const ArticleComponent: React.FC<IArticle> = ({
       ) : null}
       <div className={isOnlyTitle ? 'content only-title' : 'content'}>
         <h2 className="title">{title}</h2>
-        <p className="body">
+        <span className="body">
           <>{body && ReactHtmlParser(body)}</>
-        </p>
+        </span>
       </div>
     </ArticleStyle>
   )

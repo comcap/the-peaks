@@ -11,6 +11,18 @@ export type IArticle = {
   section: string
 }
 
+export type IResponse = {
+  currentPage: number
+  orderBy: string
+  pageSize: number
+  pages: number
+  results: IResArticles[]
+  startIndex: number
+  status: string
+  total: number
+  userTier: string
+}
+
 export type IResArticles = {
   id: string
   type: string

@@ -1,8 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { Article } from 'components/output'
+
 import { ContentHeader } from 'components/layout'
+import { Article } from 'components/output'
 import { IResArticles } from 'components/output/article/type'
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
@@ -18,30 +19,35 @@ const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
 const Content = styled.div`
   section {
     display: flex;
-    &.new {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: 30px;
-    }
+    flex-direction: column;
+    margin-top: 30px;
+
     .top-left {
       flex: 1;
     }
     .top-right {
       flex: 1;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: 30px;
     }
 
-    &.article {
-      @media screen and (min-width: 1024px) {
+    @media screen and (min-width: 1024px) {
+      &.new {
+        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 30px;
+      }
+
+      .top-right {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 30px;
+      }
+      &.article {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-gap: 30px;
       }
     }
-
-    margin-top: 30px;
     /* @media screen and (min-width: 1024px) {
         display: grid;
         grid-template-rows: auto;
@@ -79,6 +85,11 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
     return obj[key]
   }
 
+  const navigateToArticle = (id: string) =>
+    navigate('/article', {
+      state: { id }
+    })
+
   return (
     <Content>
       <section className="new">
@@ -89,11 +100,7 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
               <Article
                 className="h-100"
                 key={index}
-                onClick={() => {
-                  navigate('/article', {
-                    state: { id: article.id }
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
                 flex={'1'}
                 title={article.webTitle}
                 body={article.fields?.standfirst}
@@ -108,11 +115,7 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
             .map((article, index) => (
               <Article
                 key={index}
-                onClick={() => {
-                  navigate('/article', {
-                    state: { id: article.id }
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
                 height="255"
                 title={article.webTitle}
                 thumbnail={article.fields?.thumbnail}
@@ -125,11 +128,7 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
             .map((article, index) => (
               <Article
                 key={index}
-                onClick={() => {
-                  navigate('/article', {
-                    state: { id: article.id }
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
                 isOnlyTitle
                 height="140"
                 title={article.webTitle}
@@ -148,11 +147,7 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
             return (
               <Article
                 key={index}
-                onClick={() => {
-                  navigate('/article', {
-                    state: { id: article.id }
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
                 height="350"
                 title={article.webTitle}
                 body={article.fields?.standfirst}
@@ -173,11 +168,7 @@ const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle 
             {renderCategory(cate).articles.map((article, articleIndex) => (
               <Article
                 key={articleIndex}
-                onClick={() => {
-                  navigate('/article', {
-                    state: { id: article.id }
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
                 height="350"
                 title={article.webTitle}
                 thumbnail={article.fields?.thumbnail}

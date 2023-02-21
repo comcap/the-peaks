@@ -1,11 +1,12 @@
 import debounce from 'lodash/debounce'
-import { useState } from 'react'
-import { useQueries } from 'react-query'
+import { useEffect, useMemo, useState } from 'react'
+import { useInfiniteQuery, useQueries } from 'react-query'
 
 import { ContentHeader, ContentHomepage, ContentSearchPage, Layout } from 'components/layout'
 import { Loader } from 'components/output'
+import { IResponse } from 'components/output/article/type'
 
-import { getList } from 'core/action/collection'
+import { getList, getListInfinite } from 'core/action/collection'
 
 const showFields = 'thumbnail,body'
 
@@ -13,14 +14,17 @@ const HomePages: React.FC = () => {
   const [order, setOrder] = useState('newest')
   const [keyword, setKeyword] = useState('')
 
-  const fetchSearchArticles = () => {
+  const fetchSearchArticles = ({ pageParam = 1 }): Promise<IResponse> => {
     if (keyword) {
-      return getList('/search', {
+      return getListInfinite('/search', {
         q: keyword,
-        section: 'news',
+        page: pageParam,
+        'page-size': 15,
         'show-fields': 'all',
         'order-by': order
-      }).then((response) => response)
+      }).then((response: IResponse) => response)
+    } else {
+      return Promise.reject()
     }
   }
 
@@ -53,7 +57,7 @@ const HomePages: React.FC = () => {
       'order-by': order
     }).then((response) => response)
 
-  const [newsRes, sportRes, culturesRes, lifeAndStyleRes, searchNewRes] = useQueries([
+  const [newsRes, sportRes, culturesRes, lifeAndStyleRes] = useQueries([
     {
       queryKey: ['articles', order],
       queryFn: fetchNewsArticles
@@ -69,12 +73,46 @@ const HomePages: React.FC = () => {
     {
       queryKey: ['lifeandstyle', order],
       queryFn: fetchLifeAndStyleArticles
-    },
-    {
-      queryKey: ['searchNew', keyword, order],
-      queryFn: fetchSearchArticles
     }
   ])
+
+  const {
+    data: search,
+    isLoading: isLoadingSearch,
+    fetchNextPage
+  } = useInfiniteQuery({
+    queryKey: ['searchNew', keyword, order],
+    queryFn: ({ pageParam = 1 }) => fetchSearchArticles({ pageParam }),
+    getNextPageParam: (lastPage) => lastPage.currentPage + 1,
+    enabled: !!keyword
+  })
+
+  const [observedEl, setObservedEl] = useState<any>(null)
+
+  const observer = useMemo(
+    () =>
+      new IntersectionObserver(
+        (items) => {
+          if (items[0].isIntersecting) {
+            fetchNextPage()
+          }
+        },
+        { threshold: 1 }
+      ),
+    [fetchNextPage]
+  )
+
+  useEffect(() => {
+    if (observedEl) {
+      observer.observe(observedEl)
+    }
+
+    return () => {
+      if (observedEl) {
+        observer.unobserve(observedEl)
+      }
+    }
+  }, [observedEl, observer])
 
   const onSearch = (val: string) => {
     setKeyword(val)
@@ -84,6 +122,21 @@ const HomePages: React.FC = () => {
     setOrder(val)
   }
 
+  const renderContentSearch = () => {
+    return (
+      <>
+        <ContentHeader onFilter={onSelectFilter} title="Search results" />
+        {search?.pages.map((group) => (
+          <ContentSearchPage
+            onFilter={onSelectFilter}
+            articles={group.results}
+            loadRef={setObservedEl}
+          />
+        ))}
+      </>
+    )
+  }
+
   return (
     <Layout onSearch={debounce(onSearch, 1500)}>
       <div>
@@ -91,10 +144,10 @@ const HomePages: React.FC = () => {
         !sportRes.isLoading &&
         !culturesRes.isLoading &&
         !lifeAndStyleRes.isLoading &&
-        !searchNewRes.isLoading ? (
+        !isLoadingSearch ? (
           <>
-            {searchNewRes.data ? (
-              <ContentSearchPage onFilter={onSelectFilter} articles={searchNewRes.data} />
+            {search && search?.pages[0].results.length > 0 ? (
+              renderContentSearch()
             ) : (
               <>
                 <ContentHeader title="Top stories" filterValue={order} onFilter={onSelectFilter} />
