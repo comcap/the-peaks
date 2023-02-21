@@ -16,6 +16,7 @@ const ButtonStyle = styled.button`
 `
 
 export type IPropsButton = {
+  children: JSX.Element
   onClick: React.MouseEventHandler<HTMLButtonElement>
 }
 

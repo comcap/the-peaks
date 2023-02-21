@@ -9,6 +9,7 @@ Web application news and media from api The Guardian Open platform
 
 ### `dependencies`
 
+- craco
 - axios
 - classnames
 - moment
@@ -16,6 +17,7 @@ Web application news and media from api The Guardian Open platform
 - node-sass
 - react-html-parser
 - react-router-dom
+- react-query
 
 # Get start
 

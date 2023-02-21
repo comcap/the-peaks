@@ -72,9 +72,7 @@ export type IPropsSnackbar = {
 }
 
 const Snackbar: React.FC<IPropsSnackbar> = ({ message, show }) => {
-  return (
-    <SnackbarStyle className={classnames({ show })}>{message}</SnackbarStyle>
-  )
+  return <SnackbarStyle className={classnames({ show })}>{message}</SnackbarStyle>
 }
 
 export default Snackbar

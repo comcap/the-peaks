@@ -1,109 +1,110 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
-import { ARC } from 'components/output'
+import { useNavigate } from 'react-router-dom'
+
 import { ContentHeader } from 'components/layout'
+import { Article } from 'components/output'
+import { IResArticles } from 'components/output/article/type'
+
+import { Content } from './contentHomepage.style'
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
 export type IPropsHome = {
-  top: ARC.IResArticles[]
-  sport: ARC.IResArticles[]
-  cultures: ARC.IResArticles[]
-  lifeAndStyle: ARC.IResArticles[]
+  top: IResArticles[]
+  sport: IResArticles[]
+  cultures: IResArticles[]
+  lifeAndStyle: IResArticles[]
 }
 
 const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
 
-const ContentHome: React.FC<IPropsHome> = ({
-  top,
-  sport,
-  cultures,
-  lifeAndStyle,
-}) => {
-  const history = useHistory()
+const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle }) => {
+  const navigate = useNavigate()
 
   const renderCategory = (key: ICategory) => {
     const obj = {
       sports: {
         title: 'Sports',
-        articles: sport,
+        articles: sport
       },
       cultures: {
         title: 'Cultures',
-        articles: cultures,
+        articles: cultures
       },
       lifeAndStyle: {
         title: 'LifeAndStyle',
-        articles: lifeAndStyle,
-      },
+        articles: lifeAndStyle
+      }
     }
     return obj[key]
   }
 
-  return (
-    <div>
-      <section className='top'>
-        {top
-          .filter((_, index) => index === 0)
-          .map((article, index) => (
-            <ARC.Article
-              key={index}
-              onClick={() => {
-                history.push({
-                  pathname: '/article',
-                  state: { id: article.id },
-                })
-              }}
-              className='first'
-              title={article.webTitle}
-              body={article.fields?.bodyText}
-              thumbnail={article.fields?.thumbnail}
-            />
-          ))}
+  const navigateToArticle = (id: string) =>
+    navigate('/article', {
+      state: { id }
+    })
 
-        <section className='sec-fifth'>
+  return (
+    <Content>
+      <section className="new">
+        <div className="top-left">
           {top
-            .filter(
-              (_, index) =>
-                index === 1 || index === 2 || index === 3 || index === 4,
-            )
+            .filter((_, index) => index === 0)
             .map((article, index) => (
-              <ARC.Article
+              <Article
+                className="h-100"
                 key={index}
-                onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
-                  })
-                }}
-                className='sec'
+                onClick={() => navigateToArticle(article.id)}
+                flex={'1'}
                 title={article.webTitle}
+                body={article.fields?.standfirst}
+                section={article.sectionId}
                 thumbnail={article.fields?.thumbnail}
               />
             ))}
-        </section>
+        </div>
+        <div className="top-right">
+          {top
+            .filter((_, index) => index === 1 || index === 2)
+            .map((article, index) => (
+              <Article
+                key={index}
+                onClick={() => navigateToArticle(article.id)}
+                height="255"
+                title={article.webTitle}
+                thumbnail={article.fields?.thumbnail}
+                section={article.sectionId}
+                body={article.fields?.standfirst}
+              />
+            ))}
+          {top
+            .filter((_, index) => index === 3 || index === 4)
+            .map((article, index) => (
+              <Article
+                key={index}
+                onClick={() => navigateToArticle(article.id)}
+                isOnlyTitle
+                height="140"
+                title={article.webTitle}
+                section={article.sectionId}
+                thumbnail={article.fields?.thumbnail}
+              />
+            ))}
+        </div>
       </section>
-      <section className='more'>
+      <section className="article">
         {top
           .filter(
-            (_, index) =>
-              index !== 0 &&
-              index !== 1 &&
-              index !== 2 &&
-              index !== 3 &&
-              index !== 4,
+            (_, index) => index !== 0 && index !== 1 && index !== 2 && index !== 3 && index !== 4
           )
           .map((article, index) => {
             return (
-              <ARC.Article
+              <Article
                 key={index}
-                onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
+                height="350"
                 title={article.webTitle}
-                body={article.fields?.bodyText}
+                body={article.fields?.standfirst}
+                section={article.sectionId}
                 thumbnail={article.fields?.thumbnail}
               />
             )
@@ -116,24 +117,22 @@ const ContentHome: React.FC<IPropsHome> = ({
             showBookMark={false}
             showFilter={false}
           />
-          <section>
+          <section className="article">
             {renderCategory(cate).articles.map((article, articleIndex) => (
-              <ARC.Article
+              <Article
                 key={articleIndex}
-                onClick={() => {
-                  history.push({
-                    pathname: '/article',
-                    state: { id: article.id },
-                  })
-                }}
+                onClick={() => navigateToArticle(article.id)}
+                height="350"
                 title={article.webTitle}
                 thumbnail={article.fields?.thumbnail}
+                section={article.sectionId}
+                body={article.fields?.standfirst}
               />
             ))}
           </section>
         </div>
       ))}
-    </div>
+    </Content>
   )
 }
 

@@ -1,2 +1,4 @@
 import Button from './Button'
-export { Button }
+import Search from './Search'
+
+export { Button, Search }
