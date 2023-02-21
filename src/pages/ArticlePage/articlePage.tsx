@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react'
 import ReactHtmlParser from 'react-html-parser'
 import { useInfiniteQuery, useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
-import styled from 'styled-components'
 
 import { ContentHeader, ContentSearchPage, Layout } from 'components/layout'
 import { Loader } from 'components/output'
@@ -12,68 +11,7 @@ import { IResArticles, IResponse } from 'components/output/article/type'
 
 import { getByID, getListInfinite } from 'core/action/collection'
 
-const Content = styled.div`
-  padding-top: 60px;
-
-  .date {
-    font-size: 0.6em;
-  }
-  .detail {
-    margin-top: 20px;
-    display: flex;
-
-    figcaption {
-      color: var(--darkgray);
-      font-size: 0.5em;
-    }
-
-    .content-detail {
-      width: 100%;
-
-      @media screen and (min-width: 1024px) {
-        width: 50%;
-      }
-
-      .body {
-        width: 100%;
-        font-size: 14px;
-        img {
-          width: 100%;
-          height: auto;
-        }
-
-        p {
-          margin: 16px 0;
-        }
-      }
-    }
-    .thumbnail-inside-detail {
-      display: block;
-
-      @media screen and (min-width: 1024px) {
-        display: none;
-      }
-      img {
-        width: auto;
-        height: 260px;
-      }
-    }
-
-    .thumbnail-outside-detail {
-      width: 50%;
-      display: none;
-      margin-top: 25%;
-
-      @media screen and (min-width: 1024px) {
-        display: block;
-      }
-      img {
-        width: auto;
-        height: 260px;
-      }
-    }
-  }
-`
+import { Content } from './articlePage.style'
 
 const formatDate = (userDate: Date) => {
   const dateTime = moment(userDate)

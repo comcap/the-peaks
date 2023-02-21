@@ -1,9 +1,10 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 
 import { Article } from 'components/output'
 import { IResArticles } from 'components/output/article/type'
+
+import { Content } from './contentSearch.style'
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
 export type IPropsSearch = {
@@ -11,15 +12,6 @@ export type IPropsSearch = {
   onFilter: (val: string) => void
   loadRef?: React.LegacyRef<HTMLParagraphElement> | undefined
 }
-
-const Content = styled.section`
-  margin-top: 30px;
-  @media screen and (min-width: 1024px) {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 30px;
-  }
-`
 
 const ContentSearch: React.FC<IPropsSearch> = ({ articles, loadRef }) => {
   const navigate = useNavigate()

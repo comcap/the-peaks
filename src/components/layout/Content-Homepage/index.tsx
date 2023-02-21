@@ -1,10 +1,11 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 
 import { ContentHeader } from 'components/layout'
 import { Article } from 'components/output'
 import { IResArticles } from 'components/output/article/type'
+
+import { Content } from './contentHomepage.style'
 
 export type ICategory = 'sports' | 'cultures' | 'lifeAndStyle'
 export type IPropsHome = {
@@ -15,54 +16,6 @@ export type IPropsHome = {
 }
 
 const category: Array<ICategory> = ['sports', 'cultures', 'lifeAndStyle']
-
-const Content = styled.div`
-  section {
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-
-    .top-left {
-      flex: 1;
-    }
-    .top-right {
-      flex: 1;
-    }
-
-    @media screen and (min-width: 1024px) {
-      &.new {
-        flex-direction: row;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 30px;
-      }
-
-      .top-right {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 30px;
-      }
-      &.article {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 30px;
-      }
-    }
-    /* @media screen and (min-width: 1024px) {
-        display: grid;
-        grid-template-rows: auto;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 30px;
-      } */
-
-    /* @media screen and (min-width: 1024px) {
-      display: grid;
-      grid-template-rows: auto;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-gap: 30px;
-    } */
-  }
-`
 
 const ContentHome: React.FC<IPropsHome> = ({ top, sport, cultures, lifeAndStyle }) => {
   const navigate = useNavigate()

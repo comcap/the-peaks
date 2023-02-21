@@ -1,10 +1,11 @@
 import moment from 'moment-timezone'
-import { ArticlePage, HomePage } from 'pages'
 import { Suspense } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
 import { Loader } from 'components/output'
+
+import { ArticlePage, HomePage } from 'pages/index'
 
 import './App.scss'
 

@@ -44,3 +44,17 @@ export type IResArticles = {
     standfirst: string
   }
 }
+
+export type ColorSection = {
+  news: string
+  sport: string
+  culture: string
+  lifeandstyle: string
+}
+
+export type ArticleStyleType = {
+  flex?: string
+  span?: string
+  height?: string
+  colorSection: string
+}
