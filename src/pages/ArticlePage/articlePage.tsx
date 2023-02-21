@@ -56,10 +56,15 @@ const ArticlePage: React.FC = () => {
     queryKey: ['searchNew', keyword, order],
     queryFn: ({ pageParam = 1 }) => fetchSearchArticles({ pageParam }),
     getNextPageParam: (lastPage) => lastPage.currentPage + 1,
+    retry: 10,
     enabled: !!keyword
   })
 
-  const { data: articles, isLoading: isLoadingArticle } = useQuery('article', fetchArticle)
+  const { data: articles, isLoading: isLoadingArticle } = useQuery({
+    queryKey: 'article',
+    queryFn: fetchArticle,
+    retry: 10
+  })
 
   const [observedEl, setObservedEl] = useState<any>(null)
 

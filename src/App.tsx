@@ -1,9 +1,9 @@
 import moment from 'moment-timezone'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
-import { Loader } from 'components/output'
+import { Loader, SnackBar } from 'components/output'
 
 import { ArticlePage, HomePage } from 'pages/index'
 
@@ -13,6 +13,21 @@ const queryClient = new QueryClient()
 
 const App: React.FC = () => {
   moment().tz('Europe/London')
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
+
+  useEffect(() => {
+    const handleStatusChange = () => {
+      setIsOnline(navigator.onLine)
+    }
+
+    window.addEventListener('online', handleStatusChange)
+    window.addEventListener('offline', handleStatusChange)
+
+    return () => {
+      window.removeEventListener('online', handleStatusChange)
+      window.removeEventListener('offline', handleStatusChange)
+    }
+  }, [isOnline])
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -24,6 +39,7 @@ const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Suspense>
+        <SnackBar show={!isOnline} message="You Are Offline" />
       </Router>
     </QueryClientProvider>
   )

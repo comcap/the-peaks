@@ -60,19 +60,23 @@ const HomePages: React.FC = () => {
   const [newsRes, sportRes, culturesRes, lifeAndStyleRes] = useQueries([
     {
       queryKey: ['articles', order],
-      queryFn: fetchNewsArticles
+      queryFn: fetchNewsArticles,
+      retry: 10
     },
     {
       queryKey: ['sport', order],
-      queryFn: fetchSportsArticles
+      queryFn: fetchSportsArticles,
+      retry: 10
     },
     {
       queryKey: ['culture', order],
-      queryFn: fetchCulturesArticles
+      queryFn: fetchCulturesArticles,
+      retry: 10
     },
     {
       queryKey: ['lifeandstyle', order],
-      queryFn: fetchLifeAndStyleArticles
+      queryFn: fetchLifeAndStyleArticles,
+      retry: 10
     }
   ])
 
@@ -84,6 +88,7 @@ const HomePages: React.FC = () => {
     queryKey: ['searchNew', keyword, order],
     queryFn: ({ pageParam = 1 }) => fetchSearchArticles({ pageParam }),
     getNextPageParam: (lastPage) => lastPage.currentPage + 1,
+    retry: 10,
     enabled: !!keyword
   })
 
