@@ -16,6 +16,11 @@ export type IPropsSearch = {
 const ContentSearch: React.FC<IPropsSearch> = ({ articles, loadRef }) => {
   const navigate = useNavigate()
 
+  const navigateToArticle = (id: string) =>
+    navigate('/article', {
+      state: { id }
+    })
+
   return (
     <div>
       <Content>
@@ -23,11 +28,7 @@ const ContentSearch: React.FC<IPropsSearch> = ({ articles, loadRef }) => {
           articles.map((article, articleIndex) => (
             <Article
               key={articleIndex}
-              onClick={() => {
-                navigate('/article', {
-                  state: { id: article.id }
-                })
-              }}
+              onClick={() => navigateToArticle(article.id)}
               height={'350'}
               title={article.webTitle}
               section={article.sectionId}

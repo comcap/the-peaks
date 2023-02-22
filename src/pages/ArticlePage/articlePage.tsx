@@ -48,6 +48,10 @@ const ArticlePage: React.FC = () => {
     }).then((response) => response)
   }
 
+  useEffect(() => {
+    setKeyword('')
+  }, [location.state.id])
+
   const {
     data: search,
     isLoading: isLoadingSearch,
@@ -61,7 +65,7 @@ const ArticlePage: React.FC = () => {
   })
 
   const { data: articles, isLoading: isLoadingArticle } = useQuery({
-    queryKey: 'article',
+    queryKey: ['article', location.state.id],
     queryFn: fetchArticle,
     retry: 10
   })
